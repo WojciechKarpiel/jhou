@@ -32,7 +32,7 @@ public class Simplifier {
             for (DisagreementPair d : ds) {
                 Optional<List<DisagreementPair>> q = breakdownRigidRigid(d.getMostRigid(), d.getLeastRigid());
                 if (q.isPresent()) {
-                    ds.addAll(q.get());
+                    newL.addAll(q.get());
                 } else {
                     return NonUnifiable.INSTANCE;
                 }
@@ -47,8 +47,8 @@ public class Simplifier {
             Map<Variable, Term> fin = new HashMap<>();
             Map<Type, Constant> cs = new HashMap<>();
             for (DisagreementPair d : ds) {
-                BetaEtaNormal aN = BetaEtaNormal.normalize(d.getMostRigid());
-                BetaEtaNormal bN = BetaEtaNormal.normalize(d.getLeastRigid());
+                BetaEtaNormal aN = d.getMostRigid();
+                BetaEtaNormal bN = d.getLeastRigid();
                 Variable va = HeadOps.asVariable(aN.getHead()).get();
                 Variable vb = HeadOps.asVariable(bN.getHead()).get();
                 Type t = va.getType();
@@ -66,9 +66,9 @@ public class Simplifier {
     }
 
 
-    private static Optional<List<DisagreementPair>> breakdownRigidRigid(Term a, Term b) {
-        BetaEtaNormal aN = BetaEtaNormal.normalize(a);
-        BetaEtaNormal bN = BetaEtaNormal.normalize(b);
+    public static Optional<List<DisagreementPair>> breakdownRigidRigid(BetaEtaNormal a, BetaEtaNormal b) {
+        BetaEtaNormal aN = (a);
+        BetaEtaNormal bN = (b);
 
         if ((aN.getArguments().size() == bN.getArguments().size()) &&
                 (aN.getBinder().size() == bN.getBinder().size())) {
@@ -79,23 +79,23 @@ public class Simplifier {
 
                 List<DisagreementPair> ds = new ArrayList<>();
                 for (int i = 0; i < bNN.getArguments().size(); i++) {
+
                     DisagreementPair dp = new DisagreementPair(
-                            aN.getArguments().get(i),
-                            bNN.getArguments().get(i)
+                            extract(aN, aN.getArguments().get(i)),
+                            extract(bNN, bNN.getArguments().get(i))
                     );
-                    ds.add(dp);
+                    ds.add(dp); // TODO this is wrong pairs should be BetaEta with prefix, otherwise free variables here!
                 }
                 return Optional.of(ds);
-
-
             } else {
                 return Optional.empty();
             }
-
         } else {
             throw new RuntimeException("WRONG TYPES!!!!!");
         }
-
     }
 
+    private static BetaEtaNormal extract(BetaEtaNormal base, Term arg) {
+        return BetaEtaNormal.normalize(arg, base.getBinder());
+    }
 }

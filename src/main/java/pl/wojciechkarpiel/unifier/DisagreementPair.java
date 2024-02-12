@@ -7,29 +7,31 @@ public class DisagreementPair {
 
     private final PairType type;
 
-    private final Term mostRigid;
-    private final Term leastRigid;
+    private final BetaEtaNormal mostRigid;
+    private final BetaEtaNormal leastRigid;
 
-    public DisagreementPair(Term first, Term second) {
-        BetaEtaNormal fst = BetaEtaNormal.normalize(first);
-        BetaEtaNormal snd = BetaEtaNormal.normalize(second);
+    public DisagreementPair(Term a, Term b) {
+        this(BetaEtaNormal.normalize(a), BetaEtaNormal.normalize(b));
+    }
+
+    public DisagreementPair(BetaEtaNormal fst, BetaEtaNormal snd) {
         if (fst.isRigid() && snd.isRigid()) {
             type = PairType.RIGID_RIGID;
-            mostRigid = first;
-            leastRigid = second;
+            mostRigid = fst;
+            leastRigid = snd;
         } else if (fst.isRigid() || snd.isRigid()) {
             type = PairType.RIGID_FLEXIBLE;
             if (fst.isRigid()) {
-                mostRigid = first;
-                leastRigid = second;
+                mostRigid = fst;
+                leastRigid = snd;
             } else {
-                mostRigid = second;
-                leastRigid = first;
+                mostRigid = snd;
+                leastRigid = fst;
             }
         } else {
             type = PairType.FLEXIBLE_FLEXIBLE;
-            mostRigid = first;
-            leastRigid = second;
+            mostRigid = fst;
+            leastRigid = snd;
         }
     }
 
@@ -39,11 +41,11 @@ public class DisagreementPair {
         return type;
     }
 
-    public Term getMostRigid() {
+    public BetaEtaNormal getMostRigid() {
         return mostRigid;
     }
 
-    public Term getLeastRigid() {
+    public BetaEtaNormal getLeastRigid() {
         return leastRigid;
     }
 }

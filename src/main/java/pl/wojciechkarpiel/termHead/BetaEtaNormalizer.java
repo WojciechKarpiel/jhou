@@ -11,7 +11,12 @@ import java.util.List;
 class BetaEtaNormalizer {
 
     static BetaEtaNormal normalize(Term term) {
+        return BetaEtaNormalizer.normalize(term, new ArrayList<Variable>());
+    }
+
+    static BetaEtaNormal normalize(Term term, List<Variable> outsideBinders) {
         BetaEtaNormalizer b = new BetaEtaNormalizer();
+        b.binder.addAll(outsideBinders);
         Term normalized = Normalizer.normalize(term);
         Head h = b.normalizeInt(normalized);
         Collections.reverse(b.arguments); // were collected in the brackwards order

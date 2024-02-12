@@ -13,6 +13,10 @@ public class BetaEtaNormal {
         return BetaEtaNormalizer.normalize(term);
     }
 
+    public static BetaEtaNormal normalize(Term term, List<Variable> outsideBinders) {
+        return BetaEtaNormalizer.normalize(term, outsideBinders);
+    }
+
     public boolean isRigid() {
         return head.visit(new Head.HeadVisitor<Boolean>() {
             @Override

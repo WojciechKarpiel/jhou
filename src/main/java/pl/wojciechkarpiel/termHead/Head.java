@@ -4,6 +4,8 @@ import pl.wojciechkarpiel.ast.Constant;
 import pl.wojciechkarpiel.ast.Term;
 import pl.wojciechkarpiel.ast.Variable;
 
+import java.util.Objects;
+
 public interface Head {
 
 
@@ -15,7 +17,7 @@ public interface Head {
     class HeadVariable implements Head {
         private final Variable v;
 
-        HeadVariable(Variable v, boolean rigid) {
+        public HeadVariable(Variable v) {
             this.v = v;
         }
 
@@ -34,8 +36,16 @@ public interface Head {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            throw new RuntimeException();
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HeadVariable that = (HeadVariable) o;
+            return Objects.equals(v, that.v);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(v);
         }
     }
 
@@ -61,8 +71,16 @@ public interface Head {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            throw new RuntimeException();
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HeadConstant that = (HeadConstant) o;
+            return Objects.equals(c, that.c);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(c);
         }
     }
 

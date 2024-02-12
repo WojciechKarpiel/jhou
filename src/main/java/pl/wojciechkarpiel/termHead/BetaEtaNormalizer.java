@@ -5,6 +5,7 @@ import pl.wojciechkarpiel.ast.util.Visitor;
 import pl.wojciechkarpiel.normalizer.Normalizer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class BetaEtaNormalizer {
@@ -13,7 +14,7 @@ class BetaEtaNormalizer {
         BetaEtaNormalizer b = new BetaEtaNormalizer();
         Term normalized = Normalizer.normalize(term);
         Head h = b.normalizeInt(normalized);
-
+        Collections.reverse(b.arguments); // were collected in the brackwards order
         return new BetaEtaNormal(h, b.binder, b.arguments);
     }
 
@@ -31,8 +32,7 @@ class BetaEtaNormalizer {
 
             @Override
             public Head visitVariable(Variable variable) {
-                // TODO to nie prawda, `rigid` powinno znaczyć, że jest w ogóle z zewnątrz!
-                return new Head.HeadVariable(variable, binder.contains(variable));
+                return new Head.HeadVariable(variable);
             }
 
             @Override

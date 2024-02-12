@@ -4,7 +4,6 @@ import pl.wojciechkarpiel.ast.Term;
 import pl.wojciechkarpiel.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.unifier.DisagreementPair;
 import pl.wojciechkarpiel.unifier.DisagreementSet;
-import pl.wojciechkarpiel.unifier.simplifier.result.NonUnifiable;
 import pl.wojciechkarpiel.unifier.simplifier.result.SimplificationResult;
 import pl.wojciechkarpiel.util.UnimplementedException;
 
@@ -30,17 +29,14 @@ public class Simplifier {
 //            Substitution s= null; // TODO
 //            return new SimplificationSuccess(s);
         } else if (aRigid && bRigid) {
-
-
-            if ((aN.getHead().getTerm().equals(bN.getHead().getTerm())) &&
-                    (aN.getArguments().size() == bN.getArguments().size()) &&
+            if ((aN.getArguments().size() == bN.getArguments().size()) &&
                     (aN.getBinder().size() == bN.getBinder().size())) {
-                // TODO try-to alpha-convert in case of var-var
 
-                // todo gen disagreement pairs
+                // Compare headings modulo alpha-conv
+
                 throw new UnimplementedException();
             } else {
-                return NonUnifiable.INSTANCE;
+                throw new RuntimeException("WRONG TYPES!!!!!");
             }
         } else {
             // rigid-flexible

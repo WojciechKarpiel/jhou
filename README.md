@@ -5,11 +5,6 @@ The library provides algorithm for higher-order unification.
 
 The implementation based on
 [this paper](https://www21.in.tum.de/teaching/sar/SS20/5.pdf).
-Deviations from the paper:
-
-* Use DeBruijn indices instead of named variables, because
-  I couldn't figure out when can I safely alpha-convert
-  in beta-eta-normal form
 
 ## Implementation notes
 

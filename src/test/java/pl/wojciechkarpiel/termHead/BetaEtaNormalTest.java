@@ -75,8 +75,7 @@ class BetaEtaNormalTest {
         Abstraction app = new Abstraction(v, v);
         BetaEtaNormal ben = BetaEtaNormal.normalize(app);
 
-
-        assertFalse(ben.isRigid());
+        assertTrue(ben.isRigid());
         assertEquals(v, ben.getHead().getTerm());
         ArrayList<Variable> binders = new ArrayList<>();
         binders.add(v);
@@ -84,4 +83,27 @@ class BetaEtaNormalTest {
         ArrayList<Term> args = new ArrayList<>();
         assertEquals(args, ben.getArguments());
     }
+
+    @Test
+    void checkBindersAndArgsOrder() {
+        Constant c1 = freshConstant();
+        Constant c2 = freshConstant();
+        Variable v1 = freshVariable();
+        Variable v2 = freshVariable();
+        Variable v = freshVariable();
+        Term t = new Abstraction(v1, new Abstraction(v2, new Application(new Application(v, c1), c2)));
+        BetaEtaNormal ben = BetaEtaNormal.normalize(t);
+
+        assertFalse(ben.isRigid());
+        assertEquals(v, ben.getHead().getTerm());
+        ArrayList<Variable> binders = new ArrayList<>();
+        binders.add(v1);
+        binders.add(v2);
+        assertEquals(binders, ben.getBinder());
+        ArrayList<Term> args = new ArrayList<>();
+        args.add(c1);
+        args.add(c2);
+        assertEquals(args, ben.getArguments());
+    }
+
 }

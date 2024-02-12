@@ -1,8 +1,7 @@
 package pl.wojciechkarpiel.termHead;
 
-import pl.wojciechkarpiel.ast.Constant;
-import pl.wojciechkarpiel.ast.Term;
-import pl.wojciechkarpiel.ast.Variable;
+import pl.wojciechkarpiel.ast.*;
+import pl.wojciechkarpiel.types.TypeCalculator;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +28,19 @@ public class BetaEtaNormal {
                 return binder.contains(variable);
             }
         });
+    }
+
+    public Term backToTerm() {
+        Term t = head.getTerm();
+        for (Term argument : arguments) {
+            t = new Application(t, argument);
+        }
+        for (int i = binder.size() - 1; i >= 0; i--) {
+            t = new Abstraction(binder.get(i), t);
+        }
+        // sanity check
+        TypeCalculator.calculateType(t);
+        return t;
     }
 
     private final Head head;

@@ -28,6 +28,7 @@ class BetaEtaNormalTest {
         assertTrue(ben.isRigid());
         assertEquals(ben.getArguments(), new ArrayList<>());
         assertEquals(ben.getBinder(), new ArrayList<>());
+        assertEquals(c, ben.backToTerm());
     }
 
     @Test
@@ -38,6 +39,7 @@ class BetaEtaNormalTest {
         assertFalse(ben.isRigid());
         assertEquals(ben.getArguments(), new ArrayList<>());
         assertEquals(ben.getBinder(), new ArrayList<>());
+        assertEquals(c, ben.backToTerm());
     }
 
     @Test
@@ -54,6 +56,7 @@ class BetaEtaNormalTest {
         ArrayList<Term> args = new ArrayList<>();
         args.add(c2);
         assertEquals(args, ben.getArguments());
+        assertEquals(app, ben.backToTerm());
     }
 
     @Test
@@ -70,6 +73,7 @@ class BetaEtaNormalTest {
         assertEquals(binders, ben.getBinder());
         ArrayList<Term> args = new ArrayList<>();
         assertEquals(args, ben.getArguments());
+        assertEquals(app, ben.backToTerm());
     }
 
     @Test
@@ -85,6 +89,7 @@ class BetaEtaNormalTest {
         assertEquals(binders, ben.getBinder());
         ArrayList<Term> args = new ArrayList<>();
         assertEquals(args, ben.getArguments());
+        assertEquals(app, ben.backToTerm());
     }
 
     @Test
@@ -98,6 +103,7 @@ class BetaEtaNormalTest {
         Variable v = new Variable(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, new BaseType(Id.uniqueId()))));
         Term t = new Abstraction(v1, new Abstraction(v2, new Application(new Application(v, c1), c2)));
         BetaEtaNormal ben = BetaEtaNormal.normalize(t);
+        assertEquals(t, ben.backToTerm());
 
         assertFalse(ben.isRigid());
         assertEquals(v, ben.getHead().getTerm());

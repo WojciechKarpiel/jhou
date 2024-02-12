@@ -12,4 +12,8 @@ public class Substitution {
     public Substitution(Map<Variable, Term> substitution) {
         this.substitution = substitution;
     }
+
+    public Map<Variable, Term> getSubstitution() {
+        return substitution;
+    }
 }

@@ -15,7 +15,6 @@ The implementation goal is to make the library widely usable:
 
 ## TODO
 
-* simplify disagreement set
+* finish MVP, ie match disagreement pairs (section 3.4 from paper)
 * type checking (well-typednes ensures safety of beta-reduction)
-* Optimize normalization (HNF wherever possible)
-* rigity checker test
+* basic optimisations

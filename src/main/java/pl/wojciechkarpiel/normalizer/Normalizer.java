@@ -2,6 +2,7 @@ package pl.wojciechkarpiel.normalizer;
 
 import pl.wojciechkarpiel.ast.*;
 import pl.wojciechkarpiel.ast.util.Visitor;
+import pl.wojciechkarpiel.types.TypeCalculator;
 import pl.wojciechkarpiel.util.MapUtil;
 
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import java.util.HashMap;
 public class Normalizer {
 
     public static Term normalize(Term term) {
+        // sanity check to move somewhere else
+        TypeCalculator.calculateType(term);
         return new Normalizer().normalizeInternal(term);
     }
 

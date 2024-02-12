@@ -6,6 +6,10 @@ The library provides algorithm for higher-order unification.
 The implementation based on
 [this paper](https://www21.in.tum.de/teaching/sar/SS20/5.pdf).
 
+## Theoretical notes
+
+* η-conversion is admitted (i.e. function extensionality assumed)
+
 ## Implementation notes
 
 The implementation goal is to make the library widely usable:
@@ -16,5 +20,4 @@ The implementation goal is to make the library widely usable:
 ## TODO
 
 * finish MVP, ie match disagreement pairs (section 3.4 from paper)
-* type checking (well-typednes ensures safety of beta-reduction)
 * basic optimisations

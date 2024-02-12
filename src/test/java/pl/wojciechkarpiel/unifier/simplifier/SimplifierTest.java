@@ -57,7 +57,7 @@ class SimplifierTest {
     void breakDownRigidRigid() {
         Type argT = new BaseType(Id.uniqueId());
         Type otherT = new BaseType(Id.uniqueId());
-        Type ar = new ArrowType(argT, otherT);
+        Type ar = new ArrowType(argT, new ArrowType(otherT, new BaseType(Id.uniqueId())));
 
         Constant c = new Constant(Id.uniqueId(), ar);
         Constant a = new Constant(Id.uniqueId(), otherT);

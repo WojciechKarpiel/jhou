@@ -2,6 +2,7 @@ package pl.wojciechkarpiel.termHead;
 
 import org.junit.jupiter.api.Test;
 import pl.wojciechkarpiel.ast.*;
+import pl.wojciechkarpiel.ast.type.ArrowType;
 import pl.wojciechkarpiel.ast.type.BaseType;
 import pl.wojciechkarpiel.ast.util.Id;
 
@@ -41,8 +42,10 @@ class BetaEtaNormalTest {
 
     @Test
     void normalizeApplication() {
-        Constant c1 = freshConstant();
-        Constant c2 = freshConstant();
+        BaseType c2t = new BaseType(Id.uniqueId());
+        Constant c2 = new Constant(Id.uniqueId(), c2t);
+        Constant c1 = new Constant(Id.uniqueId(), new ArrowType(c2t, new BaseType(Id.uniqueId())));
+
         Application app = new Application(c1, c2);
         BetaEtaNormal ben = BetaEtaNormal.normalize(app);
 
@@ -86,11 +89,13 @@ class BetaEtaNormalTest {
 
     @Test
     void checkBindersAndArgsOrder() {
-        Constant c1 = freshConstant();
-        Constant c2 = freshConstant();
-        Variable v1 = freshVariable();
+        BaseType c2t = new BaseType(Id.uniqueId());
+        Constant c2 = new Constant(Id.uniqueId(), c2t);
+        BaseType c1t = new BaseType(Id.uniqueId());
+        Constant c1 = new Constant(Id.uniqueId(), c1t);
+        Variable v1 = new Variable(Id.uniqueId(), new BaseType(Id.uniqueId()));
         Variable v2 = freshVariable();
-        Variable v = freshVariable();
+        Variable v = new Variable(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, new BaseType(Id.uniqueId()))));
         Term t = new Abstraction(v1, new Abstraction(v2, new Application(new Application(v, c1), c2)));
         BetaEtaNormal ben = BetaEtaNormal.normalize(t);
 

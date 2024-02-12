@@ -29,4 +29,9 @@ public class BaseType implements Type {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public int arity() {
+        return 0;
+    }
 }

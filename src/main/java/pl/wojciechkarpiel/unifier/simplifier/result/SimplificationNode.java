@@ -27,4 +27,9 @@ public class SimplificationNode implements SimplificationResult {
     public boolean isFailure() {
         return false;
     }
+
+    @Override
+    public <T> T visit(SimplificationVisitor<T> visitor) {
+        return visitor.visitNode(this);
+    }
 }

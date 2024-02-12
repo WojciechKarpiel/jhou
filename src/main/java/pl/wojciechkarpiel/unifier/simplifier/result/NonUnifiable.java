@@ -7,4 +7,9 @@ public enum NonUnifiable implements SimplificationResult {
     public boolean isFailure() {
         return true;
     }
+
+    @Override
+    public <T> T visit(SimplificationVisitor<T> visitor) {
+        return visitor.visitFailure(this);
+    }
 }

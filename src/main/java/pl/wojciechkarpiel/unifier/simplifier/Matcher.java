@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+// TODO this is wrong arg count wrong see paper n binders, p,q args
+// here did n args
 public class Matcher {
 
 
@@ -57,6 +60,8 @@ public class Matcher {
             for (Variable hia : allBinders) {
                 t = new Application(t, hia);
             }
+            //sanity check
+            if (!TypeCalculator.calculateType(t).equals(bind.getType())) throw new RuntimeException();
             args.add(t);
         }
         return new BetaEtaNormal(new Head.HeadVariable(bind), allBinders, args);
@@ -68,7 +73,8 @@ public class Matcher {
 
 
         for (Term cArg : contantArgs) {
-            Type resTpe = TypeCalculator.calculateType(cArg);
+            Type orig = TypeCalculator.calculateType(cArg);
+            Type resTpe = orig;
             for (int i = binders.size() - 1; i >= 0; i--) {
                 Variable lst = binders.get(i);
                 resTpe = new ArrowType(lst.getType(), resTpe);
@@ -78,9 +84,11 @@ public class Matcher {
             for (Variable binder : binders) {
                 t = new Application(t, binder);
             }
+            // sanity check
+            if (!TypeCalculator.calculateType(t).equals(orig)) throw new RuntimeException();
+
             newArgs.add(t);
         }
-
         return new BetaEtaNormal(new Head.HeadConstant(c), binders, newArgs);
     }
 }

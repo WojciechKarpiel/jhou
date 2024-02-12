@@ -18,4 +18,9 @@ public class SimplificationSuccess implements SimplificationResult {
     public boolean isFailure() {
         return false;
     }
+
+    @Override
+    public <T> T visit(SimplificationVisitor<T> visitor) {
+        return visitor.visitSuccess(this);
+    }
 }

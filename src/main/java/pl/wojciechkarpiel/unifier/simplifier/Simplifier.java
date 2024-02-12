@@ -13,9 +13,9 @@ import pl.wojciechkarpiel.unifier.DisagreementPair;
 import pl.wojciechkarpiel.unifier.DisagreementSet;
 import pl.wojciechkarpiel.unifier.PairType;
 import pl.wojciechkarpiel.unifier.simplifier.result.NonUnifiable;
+import pl.wojciechkarpiel.unifier.simplifier.result.SimplificationNode;
 import pl.wojciechkarpiel.unifier.simplifier.result.SimplificationResult;
 import pl.wojciechkarpiel.unifier.simplifier.result.SimplificationSuccess;
-import pl.wojciechkarpiel.util.UnimplementedException;
 
 import java.util.*;
 
@@ -61,8 +61,8 @@ public class Simplifier {
         }
 
         // 3. handle rigid-flex
-        throw new UnimplementedException("RIGID-FLEX");
-
+        // lol jk not doing that here
+        return new SimplificationNode(new DisagreementSet(ds));
     }
 
 

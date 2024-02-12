@@ -13,4 +13,9 @@ public class SimplificationSuccess implements SimplificationResult {
     public Substitution getSolution() {
         return solution;
     }
+
+    @Override
+    public boolean isFailure() {
+        return false;
+    }
 }

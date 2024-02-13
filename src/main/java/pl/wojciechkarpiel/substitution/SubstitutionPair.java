@@ -23,6 +23,6 @@ public class SubstitutionPair {
 
     @Override
     public String toString() {
-        return "SubstitutionPair{" + variable + ", " + term + '}';
+        return "{" + variable + " -> " + term + '}';
     }
 }

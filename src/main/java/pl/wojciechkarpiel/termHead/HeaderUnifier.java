@@ -10,6 +10,10 @@ import java.util.Optional;
 
 public class HeaderUnifier {
 
+    public static boolean headAlphaUnifiable(Term t1, Term t2) {
+        return alphaUnifyHeaderReturnNewRight(BetaEtaNormal.normalize(t1), BetaEtaNormal.normalize(t2)).isPresent();
+    }
+
     // assume both rigid and variable based
     public static Optional<BetaEtaNormal> alphaUnifyHeaderReturnNewRight(BetaEtaNormal left, BetaEtaNormal right) {
         List<Variable> newRightBinders = new ArrayList<>(left.getBinder());

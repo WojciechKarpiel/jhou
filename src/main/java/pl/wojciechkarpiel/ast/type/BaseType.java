@@ -12,6 +12,10 @@ public class BaseType implements Type {
         this.id = id;
     }
 
+    public static BaseType freshBaseType() {
+        return new BaseType(Id.uniqueId());
+    }
+
     @Override
     public String toString() {
         return "Type(" + id + ")";

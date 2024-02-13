@@ -22,6 +22,14 @@ public class Variable implements Term {
         this.name = name;
     }
 
+    public static Variable freshVariable(Type type) {
+        return new Variable(Id.uniqueId(), type);
+    }
+
+    public static Variable freshVariable(Type type, String name) {
+        return new Variable(Id.uniqueId(), type, name);
+    }
+
     public Id getId() {
         return id;
     }
@@ -32,7 +40,7 @@ public class Variable implements Term {
 
     @Override
     public String toString() {
-        return name != null ? name : "V(" + id.getId() + ")";
+        return name != null ? name : "V_" + id.getId();
     }
 
     @Override

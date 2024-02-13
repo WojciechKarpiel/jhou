@@ -25,6 +25,14 @@ public class Constant implements Term {
         this.name = name;
     }
 
+    public static Constant freshConstant(Type type, String name) {
+        return new Constant(Id.uniqueId(), type, name);
+    }
+
+    public static Constant freshConstant(Type type) {
+        return new Constant(Id.uniqueId(), type);
+    }
+
     public Type getType() {
         return type;
     }
@@ -35,7 +43,7 @@ public class Constant implements Term {
 
     @Override
     public String toString() {
-        return name != null ? name : "C(" + id.getId() + ')';
+        return name != null ? name : "C_" + id.getId();
     }
 
     @Override

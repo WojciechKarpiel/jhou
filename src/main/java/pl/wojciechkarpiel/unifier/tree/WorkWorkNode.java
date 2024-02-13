@@ -98,22 +98,7 @@ public class WorkWorkNode implements Tree {
                     )).collect(Collectors.toList()));
 
             System.out.println("Yooo trying " + possibleSolution);
-            Tree tree = Simplifier.simplify(newDs).visit(new SimplificationVisitor<Tree>() {
-                @Override
-                public Tree visitSuccess(SimplificationSuccess success) {
-                    return new WeBackNode(WorkWorkNode.this, success.getSolution());
-                }
-
-                @Override
-                public Tree visitNode(SimplificationNode node) {
-                    return new WorkWorkNode(WorkWorkNode.this, possibleSolution, newDs);
-                }
-
-                @Override
-                public Tree visitFailure(NonUnifiable nonUnifiable) {
-                    return new NagmiNode(WorkWorkNode.this);
-                }
-            });
+            Tree tree = new WorkWorkNode(this, possibleSolution, newDs);
             result.add(tree);
         }
 

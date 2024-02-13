@@ -15,13 +15,19 @@ public class Unifier {
     private Unifier() {
     }
 
+    public static final int DEFAULT_MAX_ITERATIONS = 8;
+
     public static Substitution unify(Term a, Term b) {
+        return unify(a, b, DEFAULT_MAX_ITERATIONS);
+    }
+
+    public static Substitution unify(Term a, Term b, int maxIterations) {
         Term na = Normalizer.normalize(a);
         Term nb = Normalizer.normalize(b);
         DisagreementSet ds = new DisagreementSet(ListUtil.of(new DisagreementPair(na, nb)));
         Tree tree = new WorkWorkNode(null, new Substitution(new ArrayList<>()), ds);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < maxIterations; i++) {
             System.out.println("Attempt: " + i);
             tree.expandOnce();
             if (tree.itsOver()) {

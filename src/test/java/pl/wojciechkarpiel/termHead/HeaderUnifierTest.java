@@ -6,6 +6,7 @@ import pl.wojciechkarpiel.ast.Constant;
 import pl.wojciechkarpiel.ast.Term;
 import pl.wojciechkarpiel.ast.Variable;
 import pl.wojciechkarpiel.ast.type.BaseType;
+import pl.wojciechkarpiel.ast.type.Type;
 import pl.wojciechkarpiel.ast.util.Id;
 
 import java.util.Optional;
@@ -44,5 +45,31 @@ class HeaderUnifierTest {
 
         Optional<BetaEtaNormal> co = HeaderUnifier.alphaUnifyHeaderReturnNewRight(a, b);
         assertFalse(co.isPresent());
+    }
+
+    @Test
+    void ididunifiable() {
+        Type xt = BaseType.freshBaseType();
+        Variable x = Variable.freshVariable(xt, "x");
+        Term lamxx = new Abstraction(x, x);
+        Variable y = Variable.freshVariable(xt, "y");
+        Term lamyy = new Abstraction(y, y);
+        assertTrue(HeaderUnifier.headAlphaUnifiable(lamxx, lamyy));
+    }
+
+    @Test
+    void failNonUnifiable() {
+        Type xt = BaseType.freshBaseType();
+        Constant x = Constant.freshConstant(xt, "x");
+        Constant y = Constant.freshConstant(xt, "y");
+        assertFalse(HeaderUnifier.headAlphaUnifiable(x, y));
+    }
+
+    @Test
+    void vauouslyUnif() {
+        Type xt = BaseType.freshBaseType();
+        Constant x = Constant.freshConstant(xt, "x");
+        Constant y = new Constant(x.getId(), x.getType());
+        assertTrue(HeaderUnifier.headAlphaUnifiable(x, y));
     }
 }

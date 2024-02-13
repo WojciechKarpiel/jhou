@@ -6,9 +6,26 @@ The library provides algorithm for higher-order unification.
 The implementation based on
 [this paper](https://www21.in.tum.de/teaching/sar/SS20/5.pdf).
 
+## Usage
+
+**TODO**
+
+Example of unifying `λx.y (C (y x))` and `λx.C x` is in the
+[Unit tests](src/test/java/pl/wojciechkarpiel/unifier/UnifierTest.java).
+The result is `y → λx.x`, pretty cool huh?
+
+```
+Term a = ...;
+Term b = ...;
+Substitution s = Unifier.unify(a, b);
+System.out.println(s)
+-> Substitution{[{y -> (fn[x]x)}]}
+```
+
 ## Theoretical notes
 
-* η-conversion is admitted (i.e. function extensionality assumed)
+* η-conversion is admitted (i.e. function extensionality assumed),
+  see notes in chapter 4 of aforementioned paper
 
 ## Implementation notes
 
@@ -19,5 +36,9 @@ The implementation goal is to make the library widely usable:
 
 ## TODO
 
-* finish MVP, ie match disagreement pairs (section 3.4 from paper)
-* basic optimisations
+* imlpement user-facing API
+* describe how to use
+* refactor
+* publish
+* spend the rest of the PTO doing something else than coding
+* stop disappointing my parents and find a gf

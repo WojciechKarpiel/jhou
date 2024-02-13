@@ -29,24 +29,24 @@ public class WorkWorkNode implements Tree {
         this.disagreementSet = disagreementSet;
     }
 
-    public DisagreementSet getDisagreementSet() {
-        return disagreementSet;
-    }
-
     public Tree getParent() {
         return parent;
     }
 
     @Override
-    public boolean itsOver() {
+    public boolean itsOver(UsedUpNodes usedUpNodes) {
         if (children == null) return false;
-        else return children.stream().allMatch(Tree::itsOver);
+        else return children.stream().allMatch(c -> c.itsOver(usedUpNodes));
     }
 
     @Override
-    public Optional<WeBackNode> weBack() {
+    public Optional<WeBackNode> weBack(UsedUpNodes usedUpNodes) {
         if (children == null) return Optional.empty();
-        return children.stream().map(Tree::weBack).filter(Optional::isPresent).map(Optional::get).findFirst();
+        return children.stream()
+                .map(c -> c.weBack(usedUpNodes))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
     }
 
     @Override

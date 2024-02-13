@@ -26,13 +26,14 @@ public class WeBackNode implements Tree {
     }
 
     @Override
-    public boolean itsOver() {
-        return false;
+    public boolean itsOver(UsedUpNodes usedUpNodes) {
+        return !weBack(usedUpNodes).isPresent();
     }
 
     @Override
-    public Optional<WeBackNode> weBack() {
-        return Optional.of(this);
+    public Optional<WeBackNode> weBack(UsedUpNodes usedUpNodes) {
+        if (usedUpNodes.isUsedUp(this)) return Optional.empty();
+        else return Optional.of(this);
     }
 
     @Override

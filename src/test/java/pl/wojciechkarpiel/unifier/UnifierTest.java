@@ -19,8 +19,11 @@ class UnifierTest {
         BaseType type = new BaseType(Id.uniqueId());
         Variable x = new Variable(Id.uniqueId(), type);
         Variable y = new Variable(Id.uniqueId(), type);
-        Substitution s = Unifier.unify(new Abstraction(x, x), new Abstraction(y, y));
-        assertTrue(s.getSubstitution().isEmpty());
+        SolutionIterator s = Unifier.unify(new Abstraction(x, x), new Abstraction(y, y));
+
+        assertTrue(s.next().getSubstitution().isEmpty());
+        assertFalse(s.hasNext());
+
     }
 
     @Test
@@ -28,7 +31,7 @@ class UnifierTest {
         Type t = new BaseType(Id.uniqueId());
         Term a = new Constant(Id.uniqueId(), t);
         Term b = new Constant(Id.uniqueId(), t);
-        assertThrows(NagmiException.class, () -> Unifier.unify(a, b));
+        assertFalse(Unifier.unify(a, b).hasNext());
     }
 
     @Test
@@ -49,7 +52,10 @@ class UnifierTest {
             Variable x = new Variable(Id.uniqueId(), xT, "xR");
             right = new Abstraction(x, new Application(c, x));
         }
-        Substitution s = Unifier.unify(left, right);
+        SolutionIterator si = Unifier.unify(left, right);
+        Substitution s = si.next();
+        assertFalse(si.hasNext());
+
         assertEquals(1, s.getSubstitution().size());
 
         SubstitutionPair sub = s.getSubstitution().get(0);

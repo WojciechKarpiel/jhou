@@ -100,7 +100,11 @@ public class Simplifier {
                 return Optional.empty();
             }
         } else {
-            throw new RuntimeException("WRONG TYPES!!!!!");
+            System.out.println("Total mismatch, might be caused by  nonverified matcher projection, nagmi");
+            System.out.println(aN);
+            System.out.println(bN);
+            System.out.println("---");
+            return Optional.empty();
         }
     }
 

@@ -10,10 +10,16 @@ public class Variable implements Term {
 
     private final Id id;
     private final Type type;
+    private final String name;
 
     public Variable(Id id, Type type) {
+        this(id, type, null);
+    }
+
+    public Variable(Id id, Type type, String name) {
         this.id = id;
         this.type = type;
+        this.name = name;
     }
 
     public Id getId() {
@@ -26,10 +32,7 @@ public class Variable implements Term {
 
     @Override
     public String toString() {
-        return "Variable{" +
-                "id=" + id +
-                ", type=" + type +
-                '}';
+        return name != null ? name : "V(" + id.getId() + ")";
     }
 
     @Override

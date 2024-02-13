@@ -10,11 +10,19 @@ public class Constant implements Term {
 
     private final Id id;
     private final Type type;
+    private final String name;
 
     public Constant(Id id, Type type) {
+        this(id, type, null);
+    }
 
+    /**
+     * @param name For printing only, equality is decided by Id
+     */
+    public Constant(Id id, Type type, String name) {
         this.id = id;
         this.type = type;
+        this.name = name;
     }
 
     public Type getType() {
@@ -27,10 +35,7 @@ public class Constant implements Term {
 
     @Override
     public String toString() {
-        return "Constant{" +
-                "id=" + id +
-                ", type=" + type +
-                '}';
+        return name != null ? name : "C(" + id.getId() + ')';
     }
 
     @Override

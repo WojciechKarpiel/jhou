@@ -25,9 +25,14 @@ public class Substitution {
     }
 
     public Term substitute(Term input) {
-        return new Substitution.Substituter(substitution).substituteInt(input);
+        Term term = new Substituter(substitution).substituteInt(input);
+        return term;
     }
 
+    @Override
+    public String toString() {
+        return "Substitution{" + substitution + '}';
+    }
 
     private static class Substituter {
         List<SubstitutionPair> substitution;

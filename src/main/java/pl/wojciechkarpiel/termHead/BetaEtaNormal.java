@@ -78,4 +78,13 @@ public class BetaEtaNormal {
     public int hashCode() {
         return Objects.hash(head, binder, arguments);
     }
+
+    @Override
+    public String toString() {
+        return "BetaEtaNormal{" +
+                binder +
+                "[" + head +
+                "]" + arguments +
+                '}';
+    }
 }

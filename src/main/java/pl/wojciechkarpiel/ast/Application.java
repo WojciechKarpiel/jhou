@@ -24,10 +24,7 @@ public class Application implements Term {
 
     @Override
     public String toString() {
-        return "Application{" +
-                "function=" + function +
-                ", argument=" + argument +
-                '}';
+        return "(" + function + " " + argument + ")";
     }
 
     @Override

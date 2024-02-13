@@ -13,6 +13,10 @@ public class Id {
         return new Id(COUNTER++);
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Id(" + id + ")";

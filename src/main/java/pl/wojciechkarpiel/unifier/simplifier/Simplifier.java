@@ -87,6 +87,14 @@ public class Simplifier {
                     );
                     ds.add(dp); // TODO this is wrong pairs should be BetaEta with prefix, otherwise free variables here!
                 }
+                {
+                    System.out.println("Broke down ");
+                    System.out.println(a);
+                    System.out.println(b);
+                    System.out.println("into following");
+                    ds.forEach(System.out::println);
+                }
+
                 return Optional.of(ds);
             } else {
                 return Optional.empty();

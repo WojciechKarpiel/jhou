@@ -47,6 +47,11 @@ public interface Head {
         public int hashCode() {
             return Objects.hash(v);
         }
+
+        @Override
+        public String toString() {
+            return v.toString();
+        }
     }
 
     class HeadConstant implements Head {
@@ -81,6 +86,11 @@ public interface Head {
         @Override
         public int hashCode() {
             return Objects.hash(c);
+        }
+
+        @Override
+        public String toString() {
+            return c.toString();
         }
     }
 

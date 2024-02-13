@@ -20,4 +20,9 @@ public class SubstitutionPair {
     public Term getTerm() {
         return term;
     }
+
+    @Override
+    public String toString() {
+        return "SubstitutionPair{" + variable + ", " + term + '}';
+    }
 }

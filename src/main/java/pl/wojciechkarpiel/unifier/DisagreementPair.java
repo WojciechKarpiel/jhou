@@ -48,4 +48,11 @@ public class DisagreementPair {
     public BetaEtaNormal getLeastRigid() {
         return leastRigid;
     }
+
+    @Override
+    public String toString() {
+        return "DisagreementPair[" + type + "]:\n" +
+                "  " + mostRigid +
+                "\n  " + leastRigid;
+    }
 }

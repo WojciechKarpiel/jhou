@@ -25,10 +25,7 @@ public class Abstraction implements Term {
 
     @Override
     public String toString() {
-        return "Abstraction{" +
-                "variable=" + variable +
-                ", body=" + body +
-                '}';
+        return "(fn[" + variable + "]" + body + ')';
     }
 
     @Override

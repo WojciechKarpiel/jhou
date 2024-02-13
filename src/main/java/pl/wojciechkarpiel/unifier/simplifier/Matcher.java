@@ -1,6 +1,5 @@
 package pl.wojciechkarpiel.unifier.simplifier;
 
-import pl.wojciechkarpiel.ast.Application;
 import pl.wojciechkarpiel.ast.Constant;
 import pl.wojciechkarpiel.ast.Term;
 import pl.wojciechkarpiel.ast.Variable;
@@ -17,78 +16,131 @@ import java.util.List;
 import java.util.Optional;
 
 
-// TODO this is wrong arg count wrong see paper n binders, p,q args
-// here did n args
 public class Matcher {
+    public static class RigidFlexible {
+        private final BetaEtaNormal rigid;
+        private final BetaEtaNormal flexible;
 
+        public RigidFlexible(BetaEtaNormal rigid, BetaEtaNormal flexible) {
+            this.rigid = rigid;
+            this.flexible = flexible;
+            if (!rigid.isRigid()) throw new IllegalArgumentException();
+            if (flexible.isRigid()) throw new IllegalArgumentException();
+        }
+
+        public BetaEtaNormal getFlexible() {
+            return flexible;
+        }
+
+        public BetaEtaNormal getRigid() {
+            return rigid;
+        }
+
+
+        // below methods use names from paper, eases confusion when translating paper into code, will refactor later TODO
+        public int getN() {
+            return getRigid().getBinder().size();
+        }
+
+        public int getP() {
+            return getFlexible().getArguments().size();
+        }
+
+        public List<Term> underP() {
+            return getFlexible().getArguments();
+        }
+
+        public int getQ() {
+            return getRigid().getArguments().size();
+        }
+
+        public List<Term> underQ() {
+            return getRigid().getArguments();
+        }
+    }
 
     /**
      * @return possible solutions
      */
-    public static List<BetaEtaNormal> match(BetaEtaNormal rigid, BetaEtaNormal flexible) {
-        if (!rigid.isRigid()) throw new IllegalArgumentException();
-        if (flexible.isRigid()) throw new IllegalArgumentException();
-        List<BetaEtaNormal> res = new ArrayList<>();
+    public static List<Term> match(BetaEtaNormal rigid, BetaEtaNormal flexible) {
+        return match(new RigidFlexible(rigid, flexible));
+    }
+
+    public static List<Term> match(RigidFlexible rigidFlexible) {
+        BetaEtaNormal rigid = rigidFlexible.getRigid();
+        BetaEtaNormal flexible = rigidFlexible.getFlexible();
+        List<Term> res = new ArrayList<>();
         Optional<Constant> rigidConstant = HeadOps.asConstant(rigid.getHead());
-        rigidConstant.ifPresent(c -> res.add(imitate(flexible, c, rigid.getArguments())));
+        rigidConstant.ifPresent(c -> res.add(imitate(rigidFlexible)));
 
-        res.addAll(projections(flexible));
+        res.addAll(projections(rigidFlexible));
 
         return res;
     }
 
-    public static List<BetaEtaNormal> projections(BetaEtaNormal flexible) {
-        List<BetaEtaNormal> res = new ArrayList<>(flexible.getBinder().size());
-        for (Variable bind : flexible.getBinder()) {
-            res.add(projForBinder(bind, flexible.getBinder()));
+    public static List<Term> projections(RigidFlexible rigidFlexible) {
+        List<Term> res = new ArrayList<>(rigidFlexible.getP());
+        for (int i = 0; i < rigidFlexible.getP(); i++) {
+            res.add(projForBinder(i, rigidFlexible));
         }
 
         return res;
     }
 
-    private static BetaEtaNormal projForBinder(Variable bind, List<Variable> allBinders) {
-        List<Term> args = new ArrayList<>(allBinders.size());
-
-        Type resTpe = bind.getType();
-        for (int i = allBinders.size() - 1; i >= 0; i--) {
-            Variable lst = allBinders.get(i);
-            resTpe = new ArrowType(lst.getType(), resTpe);
-        }
-
-        for (int i = 0; i < bind.getType().arity(); i++) {
-            Term t = new Variable(Id.uniqueId(), resTpe);
-            for (Variable hia : allBinders) {
-                t = new Application(t, hia);
+    private static Term projForBinder(int i, RigidFlexible rigidFlexible) {
+        List<Variable> binders = getPBinders(rigidFlexible);
+        Head.HeadVariable newHead = new Head.HeadVariable(binders.get(i));
+        Type headType = newHead.getV().getType();
+        List<Term> args = new ArrayList<>(headType.arity());
+        for (int j = 0; j < headType.arity(); j++) {
+            Type targetType = headType;
+            for (int k = binders.size() - 1; k >= 0; k--) {
+                targetType = new ArrowType(binders.get(k).getType(), targetType);
             }
-            //sanity check
-            if (!TypeCalculator.calculateType(t).equals(bind.getType())) throw new RuntimeException();
-            args.add(t);
+            Variable hi = new Variable(Id.uniqueId(), targetType);
+            BetaEtaNormal arg = new BetaEtaNormal(
+                    new Head.HeadVariable(hi),
+                    new ArrayList<>(),
+                    new ArrayList<>(binders) // replacement binders are arg's argyments
+            );
+            TypeCalculator.calculateType(arg.backToTerm()); //sanity check
+            args.add(arg.backToTerm());
         }
-        return new BetaEtaNormal(new Head.HeadVariable(bind), allBinders, args);
+        Term term = new BetaEtaNormal(newHead, binders, args).backToTerm();
+        TypeCalculator.calculateType(term);
+        return term;
     }
 
-    public static BetaEtaNormal imitate(BetaEtaNormal flexible, Constant c, List<Term> contantArgs) {
-        List<Variable> binders = new ArrayList<>(flexible.getBinder());
-        List<Term> newArgs = new ArrayList<>(contantArgs.size());
+    private static List<Variable> getPBinders(RigidFlexible rigidFlexible) {
+        List<Variable> binders = new ArrayList<>(rigidFlexible.getP());
+        for (Term flexibleArg : rigidFlexible.underP()) {
+            Variable v = new Variable(Id.uniqueId(), TypeCalculator.calculateType(flexibleArg));
+            binders.add(v);
+        }
+        return binders;
+    }
 
-
-        for (Term cArg : contantArgs) {
-            Type orig = TypeCalculator.calculateType(cArg);
-            Type resTpe = orig;
+    public static Term imitate(RigidFlexible rigidFlexible) {
+        List<Variable> binders = getPBinders(rigidFlexible);
+        Head newHead = rigidFlexible.getRigid().getHead();
+        List<Term> args = new ArrayList<>(rigidFlexible.getQ());
+        for (Term rigidArg : rigidFlexible.underQ()) {
+            Type targetType = TypeCalculator.calculateType(rigidArg);
             for (int i = binders.size() - 1; i >= 0; i--) {
-                Variable lst = binders.get(i);
-                resTpe = new ArrowType(lst.getType(), resTpe);
+                targetType = new ArrowType(binders.get(i).getType(), targetType);
             }
-
-            Term t = new Variable(Id.uniqueId(), resTpe);
-            for (Variable binder : binders) {
-                t = new Application(t, binder);
-            }
-            // sanity check
-            if (!TypeCalculator.calculateType(t).equals(orig)) throw new RuntimeException();
-
-            newArgs.add(t);
+            Variable hi = new Variable(Id.uniqueId(), targetType);
+            BetaEtaNormal arg = new BetaEtaNormal(
+                    new Head.HeadVariable(hi),
+                    new ArrayList<>(),
+                    new ArrayList<>(binders) // replacement binders are arg's arguments
+            );
+            TypeCalculator.calculateType(arg.backToTerm()); //sanity check
+            args.add(arg.backToTerm());
         }
-        return new BetaEtaNormal(new Head.HeadConstant(c), binders, newArgs);
+
+        Term term = new BetaEtaNormal(newHead, binders, args).backToTerm();
+        TypeCalculator.calculateType(term);
+        return term;
     }
 }

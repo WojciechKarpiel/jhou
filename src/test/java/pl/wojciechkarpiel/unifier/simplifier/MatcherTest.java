@@ -32,12 +32,12 @@ class MatcherTest {
         BetaEtaNormal rigidBen = BetaEtaNormal.normalize(rigid);
 
 
-        assertThrows(IllegalArgumentException.class, () -> Matcher.match(flexBen, flexBen));
-        assertThrows(IllegalArgumentException.class, () -> Matcher.match(rigidBen, rigidBen));
-        List<BetaEtaNormal> matched = Matcher.match(rigidBen, flexBen);
+        assertThrows(IllegalArgumentException.class, () -> Matcher.match(new Matcher.RigidFlexible(flexBen, flexBen)));
+        assertThrows(IllegalArgumentException.class, () -> Matcher.match(new Matcher.RigidFlexible(rigidBen, rigidBen)));
+        List<Term> matched = Matcher.match(new Matcher.RigidFlexible(rigidBen, flexBen));
         assertEquals(3, matched.size());
         {
-            BetaEtaNormal impersonation = matched.get(0);
+            BetaEtaNormal impersonation = BetaEtaNormal.normalize(matched.get(0));
             Optional<Constant> co = HeadOps.asConstant(impersonation.getHead());
             assertTrue(co.isPresent());
             assertEquals(c, co.get());

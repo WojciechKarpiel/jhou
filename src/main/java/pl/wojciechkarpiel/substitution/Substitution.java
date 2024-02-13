@@ -2,26 +2,25 @@ package pl.wojciechkarpiel.substitution;
 
 import pl.wojciechkarpiel.ast.*;
 import pl.wojciechkarpiel.ast.util.Visitor;
-import pl.wojciechkarpiel.util.MapUtil;
+import pl.wojciechkarpiel.util.ListUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class Substitution {
 
-    private final Map<Variable, Term> substitution;
+    private final List<SubstitutionPair> substitution;
 
     public Substitution(Variable variable, Term term) {
-        Map<Variable, Term> sub = new HashMap<>();
-        sub.put(variable, term);
-        this.substitution = sub;
+        this(ListUtil.of(new SubstitutionPair(variable, term)));
     }
 
-    public Substitution(Map<Variable, Term> substitution) {
+    public Substitution(List<SubstitutionPair> substitution) {
         this.substitution = substitution;
     }
 
-    public Map<Variable, Term> getSubstitution() {
+    public List<SubstitutionPair> getSubstitution() {
         return substitution;
     }
 
@@ -31,11 +30,11 @@ public class Substitution {
 
 
     private static class Substituter {
-        MapUtil<Variable, Term> map;
+        List<SubstitutionPair> substitution;
 
-        private Substituter(Map<Variable, Term> inSub) {
+        private Substituter(List<SubstitutionPair> inSub) {
             // todo is defensive copy needed?
-            this.map = new MapUtil<>(new HashMap<>(inSub));
+            this.substitution = new ArrayList<>(inSub);
         }
 
         public Term substituteInt(Term input) {
@@ -47,7 +46,10 @@ public class Substitution {
 
                 @Override
                 public Term visitVariable(Variable variable) {
-                    return map.get(variable).orElse(variable);
+                    return substitution.stream()
+                            .filter(p -> p.getVariable().equals(variable))
+                            .map(SubstitutionPair::getTerm)
+                            .findFirst().orElse(variable);
                 }
 
                 @Override
@@ -60,13 +62,26 @@ public class Substitution {
 
                 @Override
                 public Term visitAbstraction(Abstraction abstraction) {
-                    return new Abstraction(
+                    Variable v = abstraction.getVariable();
+                    int i;
+                    Optional<SubstitutionPair> oldPair = Optional.empty();
+                    for (i = 0; i < substitution.size(); i++) {
+                        SubstitutionPair substitutionPair = substitution.get(i);
+                        if (substitutionPair.getVariable().equals(v)) {
+                            oldPair = Optional.of(substitutionPair);
+                            substitution.set(i, new SubstitutionPair(v, v));
+                            break;
+                        }
+                    }
+                    Term ret = new Abstraction(
                             abstraction.getVariable(),
-                            map.withoutMapping(
-                                    abstraction.getVariable(),
-                                    () -> substituteInt(abstraction.getBody())
-                            )
+                            substituteInt(abstraction.getBody())
                     );
+                    if (oldPair.isPresent()) {
+                        substitution.set(i, oldPair.get());
+                    }
+
+                    return ret;
                 }
             });
         }

@@ -6,6 +6,7 @@ import pl.wojciechkarpiel.ast.Variable;
 import pl.wojciechkarpiel.ast.type.ArrowType;
 import pl.wojciechkarpiel.ast.type.Type;
 import pl.wojciechkarpiel.ast.util.Id;
+import pl.wojciechkarpiel.substitution.Substitution;
 import pl.wojciechkarpiel.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.termHead.Head;
 import pl.wojciechkarpiel.termHead.HeadOps;
@@ -14,6 +15,7 @@ import pl.wojciechkarpiel.types.TypeCalculator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class Matcher {
@@ -59,6 +61,12 @@ public class Matcher {
         }
     }
 
+
+    public static List<Substitution> matchS(BetaEtaNormal rigid, BetaEtaNormal flexible) {
+        List<Term> matches = match(rigid, flexible);
+        Variable v = HeadOps.asVariable(flexible.getHead()).get();
+        return matches.stream().map(m -> new Substitution(v, m)).collect(Collectors.toList());
+    }
     /**
      * @return possible solutions
      */

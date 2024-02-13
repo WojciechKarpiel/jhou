@@ -6,6 +6,7 @@ import pl.wojciechkarpiel.ast.Variable;
 import pl.wojciechkarpiel.ast.type.Type;
 import pl.wojciechkarpiel.ast.util.Id;
 import pl.wojciechkarpiel.substitution.Substitution;
+import pl.wojciechkarpiel.substitution.SubstitutionPair;
 import pl.wojciechkarpiel.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.termHead.HeadOps;
 import pl.wojciechkarpiel.termHead.HeaderUnifier;
@@ -44,7 +45,7 @@ public class Simplifier {
 
         // 2. check if its the end (flex-flex)
         if (ds.stream().allMatch(q -> q.getType() == PairType.FLEXIBLE_FLEXIBLE)) {
-            Map<Variable, Term> fin = new HashMap<>();
+            List<SubstitutionPair> fin = new ArrayList<>();
             Map<Type, Constant> cs = new HashMap<>();
             for (DisagreementPair d : ds) {
                 BetaEtaNormal aN = d.getMostRigid();
@@ -53,8 +54,8 @@ public class Simplifier {
                 Variable vb = HeadOps.asVariable(bN.getHead()).get();
                 Type t = va.getType();
                 Constant c = cs.putIfAbsent(t, new Constant(Id.uniqueId(), t));
-                fin.put(va, c);
-                fin.put(vb, c);
+                fin.add(new SubstitutionPair(va, c));
+                fin.add(new SubstitutionPair(vb, c));
             }
 
             return new SimplificationSuccess(new Substitution(fin));

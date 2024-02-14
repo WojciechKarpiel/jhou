@@ -14,6 +14,7 @@ public class HeaderUnifier {
         return alphaUnifyHeaderReturnNewRight(BetaEtaNormal.normalize(t1), BetaEtaNormal.normalize(t2)).isPresent();
     }
 
+    // TODO: incorporate this into alpha-conversion framework
     // assume both rigid and variable based
     public static Optional<BetaEtaNormal> alphaUnifyHeaderReturnNewRight(BetaEtaNormal left, BetaEtaNormal right) {
         List<Variable> newRightBinders = new ArrayList<>(left.getBinder());

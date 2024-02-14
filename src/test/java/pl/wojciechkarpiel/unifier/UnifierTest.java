@@ -8,7 +8,6 @@ import pl.wojciechkarpiel.ast.type.Type;
 import pl.wojciechkarpiel.ast.util.Id;
 import pl.wojciechkarpiel.substitution.Substitution;
 import pl.wojciechkarpiel.substitution.SubstitutionPair;
-import pl.wojciechkarpiel.termHead.HeaderUnifier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,7 +61,7 @@ class UnifierTest {
         assertEquals(y, sub.getVariable());
         Variable fresh = new Variable(Id.uniqueId(), xT);
         Term lamxx = new Abstraction(fresh, fresh);
-        assertTrue(HeaderUnifier.headAlphaUnifiable(lamxx, sub.getTerm()));
+        assertEquals(lamxx, sub.getTerm());
     }
 
     @Test

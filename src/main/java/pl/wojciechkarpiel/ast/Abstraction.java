@@ -1,5 +1,6 @@
 package pl.wojciechkarpiel.ast;
 
+import pl.wojciechkarpiel.alpha.AlphaEqual;
 import pl.wojciechkarpiel.ast.util.Visitor;
 
 import java.util.Objects;
@@ -33,7 +34,7 @@ public class Abstraction implements Term {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Abstraction that = (Abstraction) o;
-        return Objects.equals(variable, that.variable) && Objects.equals(body, that.body);
+        return AlphaEqual.isAlphaEqual(this, that);
     }
 
     @Override

@@ -1,9 +1,8 @@
 package pl.wojciechkarpiel.normalizer;
 
-import pl.wojciechkarpiel.ast.Abstraction;
-import pl.wojciechkarpiel.ast.Application;
-import pl.wojciechkarpiel.ast.Constant;
-import pl.wojciechkarpiel.ast.Variable;
+import org.junit.jupiter.api.Test;
+import pl.wojciechkarpiel.ast.*;
+import pl.wojciechkarpiel.ast.type.ArrowType;
 import pl.wojciechkarpiel.ast.type.BaseType;
 import pl.wojciechkarpiel.ast.type.Type;
 import pl.wojciechkarpiel.ast.util.Id;
@@ -32,5 +31,16 @@ class NormalizerTest {
         Constant c = new Constant(Id.uniqueId(), type);
         Application app = new Application(abs, c);
         assertEquals(c, Normalizer.betaNormalize(app));
+    }
+
+    @Test
+    void etaNormalization() {
+        Type t = BaseType.freshBaseType();
+        Type y = BaseType.freshBaseType();
+        Constant f = Constant.freshConstant(new ArrowType(t, y), "F");
+        Variable x = Variable.freshVariable(t, "x");
+
+        Term abs = new Abstraction(x, new Application(f, x));
+        assertEquals(f, Normalizer.etaNormalize(abs));
     }
 }

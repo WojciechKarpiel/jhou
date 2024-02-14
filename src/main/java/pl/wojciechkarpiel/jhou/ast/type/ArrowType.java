@@ -35,7 +35,7 @@ public class ArrowType implements Type {
 
     @Override
     public String toString() {
-        return "Arrow(" + from + "->" + to + ")";
+        return "Arrow(" + from + "→" + to + ")";
     }
 
     @Override

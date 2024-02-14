@@ -25,7 +25,7 @@ public class SubstitutionPair {
 
     @Override
     public String toString() {
-        return "{" + variable + " -> " + term + '}';
+        return "{" + variable + " → " + term + '}';
     }
 
     @Override

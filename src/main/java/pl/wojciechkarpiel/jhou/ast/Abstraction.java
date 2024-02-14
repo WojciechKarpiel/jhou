@@ -40,7 +40,7 @@ public class Abstraction implements Term {
 
     @Override
     public String toString() {
-        return "(fn[" + variable + "]" + body + ')';
+        return "λ" + variable + "." + body;
     }
 
     @Override

@@ -51,8 +51,7 @@ public class Main {
     SolutionIterator result = unify(left, right);
     Substitution solution = result.next();
     System.out.println(solution);
-    // prints: Substitution{[{y -> (fn[V_7]V_7)}]}
-    // fn[V_7]V_7 is λx.x
+    // prints: Substitution{[{y → λV_7.V_7}]}
   }
 }
 ```

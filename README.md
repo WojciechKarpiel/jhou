@@ -15,7 +15,7 @@ Add following dependency to your project:
 <dependency>
   <groupId>pl.wojciechkarpiel</groupId>
   <artifactId>jhou</artifactId>
-  <version>0.2</version>
+  <version>0.3</version>
 </dependency>
 ```
 

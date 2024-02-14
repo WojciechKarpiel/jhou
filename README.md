@@ -8,6 +8,9 @@ The implementation based on
 
 ## Usage
 
+For full API, see the
+[API definition](src/main/java/pl/wojciechkarpiel/api/Api.java).
+
 **TODO**
 
 Example of unifying `λx.y (C (y x))` and `λx.C x` is in the

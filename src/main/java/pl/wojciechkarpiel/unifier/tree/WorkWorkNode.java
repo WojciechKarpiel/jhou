@@ -93,8 +93,8 @@ public class WorkWorkNode implements Tree {
         for (Substitution possibleSolution : flatSubs) {
             DisagreementSet newDs = new DisagreementSet(disagreement.getDisagreements().stream().map(disagreementPair ->
                     new DisagreementPair(
-                            Normalizer.normalize(possibleSolution.substitute(disagreementPair.getMostRigid().backToTerm())),
-                            Normalizer.normalize(possibleSolution.substitute(disagreementPair.getLeastRigid().backToTerm()))
+                            Normalizer.betaNormalize(possibleSolution.substitute(disagreementPair.getMostRigid().backToTerm())),
+                            Normalizer.betaNormalize(possibleSolution.substitute(disagreementPair.getLeastRigid().backToTerm()))
                     )).collect(Collectors.toList()));
 
             System.out.println("Yooo trying " + possibleSolution);

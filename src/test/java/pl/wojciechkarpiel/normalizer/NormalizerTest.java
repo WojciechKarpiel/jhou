@@ -15,13 +15,13 @@ class NormalizerTest {
     @org.junit.jupiter.api.Test
     void normalizeConstant() {
         Constant c = new Constant(Id.uniqueId(), new BaseType(Id.uniqueId()));
-        assertEquals(c, Normalizer.normalize(c));
+        assertEquals(c, Normalizer.betaNormalize(c));
     }
 
     @org.junit.jupiter.api.Test
     void normalizeFreeVariable() {
         Variable v = new Variable(Id.uniqueId(), new BaseType(Id.uniqueId()));
-        assertEquals(v, Normalizer.normalize(v));
+        assertEquals(v, Normalizer.betaNormalize(v));
     }
 
     @org.junit.jupiter.api.Test
@@ -31,6 +31,6 @@ class NormalizerTest {
         Abstraction abs = new Abstraction(v, v);
         Constant c = new Constant(Id.uniqueId(), type);
         Application app = new Application(abs, c);
-        assertEquals(c, Normalizer.normalize(app));
+        assertEquals(c, Normalizer.betaNormalize(app));
     }
 }

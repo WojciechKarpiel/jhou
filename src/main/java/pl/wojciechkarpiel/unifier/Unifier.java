@@ -18,8 +18,9 @@ public class Unifier {
     }
 
     public static SolutionIterator unify(Term a, Term b, int maxIterations) {
-        Term na = Normalizer.normalize(a);
-        Term nb = Normalizer.normalize(b);
+        // todo how to get eta here without breaking stuff?
+        Term na = Normalizer.betaNormalize(a);
+        Term nb = Normalizer.betaNormalize(b);
         DisagreementSet ds = new DisagreementSet(ListUtil.of(new DisagreementPair(na, nb)));
         Tree tree = new WorkWorkNode(null, new Substitution(new ArrayList<>()), ds);
         return new SolutionIterator(tree, maxIterations);

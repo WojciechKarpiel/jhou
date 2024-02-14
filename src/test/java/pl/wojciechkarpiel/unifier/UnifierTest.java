@@ -64,4 +64,19 @@ class UnifierTest {
         Term lamxx = new Abstraction(fresh, fresh);
         assertTrue(HeaderUnifier.headAlphaUnifiable(lamxx, sub.getTerm()));
     }
+
+    @Test
+    void etaNOTAUTOMATICALLYAdmitted() {
+        Type t = BaseType.freshBaseType();
+        Type y = BaseType.freshBaseType();
+        Constant f = Constant.freshConstant(new ArrowType(t, y), "F");
+        Variable x = Variable.freshVariable(t, "x");
+
+        Term left = new Abstraction(x, new Application(f, x));
+        Term right = f;
+        SolutionIterator result = Unifier.unify(left, f);
+
+//        assertTrue(result.next().getSubstitution().isEmpty()); // NO AUTO ETA
+        assertFalse(result.hasNext());
+    }
 }

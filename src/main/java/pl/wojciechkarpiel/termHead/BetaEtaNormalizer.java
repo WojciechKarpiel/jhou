@@ -17,7 +17,7 @@ class BetaEtaNormalizer {
     static BetaEtaNormal normalize(Term term, List<Variable> outsideBinders) {
         BetaEtaNormalizer b = new BetaEtaNormalizer();
         b.binder.addAll(outsideBinders);
-        Term normalized = Normalizer.normalize(term);
+        Term normalized = Normalizer.betaNormalize(term);
         Head h = b.normalizeInt(normalized);
         Collections.reverse(b.arguments); // were collected in the brackwards order
         return new BetaEtaNormal(h, b.binder, b.arguments);

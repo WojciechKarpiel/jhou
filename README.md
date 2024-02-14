@@ -27,6 +27,10 @@ System.out.println(s)
 * η-conversion is admitted (i.e. function extensionality assumed),
   see notes in chapter 4 of aforementioned paper
 
+Above claim is a smart-sounding claim from the paper, tbh I don't understand it fully,
+because the algorithm doesn't unify `λx.C x` and `C`,
+so not automatically doing eta conversion. If you're capable of clarifying, LMK please
+
 ## Implementation notes
 
 The implementation goal is to make the library widely usable:

@@ -1,9 +1,11 @@
 package pl.wojciechkarpiel.jhou.ast;
 
 import pl.wojciechkarpiel.jhou.alpha.AlphaEqual;
+import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class Abstraction implements Term {
 
@@ -13,6 +15,12 @@ public class Abstraction implements Term {
     public Abstraction(Variable variable, Term body) {
         this.variable = variable;
         this.body = body;
+    }
+
+    public static Abstraction fromLambda(Type variableType, Function<Variable, Term> abstraction) {
+        Variable v = Variable.freshVariable(variableType);
+        Term body = abstraction.apply(v);
+        return new Abstraction(v, body);
     }
 
     public Variable getVariable() {

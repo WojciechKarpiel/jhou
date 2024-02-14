@@ -6,6 +6,7 @@ import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Substitution {
@@ -25,8 +26,20 @@ public class Substitution {
     }
 
     public Term substitute(Term input) {
-        Term term = new Substituter(substitution).substituteInt(input);
-        return term;
+        return new Substituter(substitution).substituteInt(input);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Substitution that = (Substitution) o;
+        return Objects.equals(substitution, that.substitution);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(substitution);
     }
 
     @Override

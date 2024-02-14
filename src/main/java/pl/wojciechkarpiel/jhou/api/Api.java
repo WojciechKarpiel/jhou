@@ -8,6 +8,8 @@ import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 import pl.wojciechkarpiel.jhou.unifier.Unifier;
 
+import java.util.function.Function;
+
 /**
  * Public API methods. The intended usage is:
  * <pre>
@@ -64,6 +66,14 @@ public class Api {
 
     public static Term application(Term function, Term argument) {
         return new Application(function, argument);
+    }
+
+    public static Term app(Term function, Term argument) {
+        return application(function, argument);
+    }
+
+    public static Term abstraction(Type variableType, Function<Variable, Term> abstraction) {
+        return Abstraction.fromLambda(variableType, abstraction);
     }
 
     public static Term abstraction(Variable variable, Term body) {

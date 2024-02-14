@@ -97,7 +97,6 @@ public class WorkWorkNode implements Tree {
                             Normalizer.betaNormalize(possibleSolution.substitute(disagreementPair.getLeastRigid().backToTerm()))
                     )).collect(Collectors.toList()));
 
-            System.out.println("Yooo trying " + possibleSolution);
             Tree tree = new WorkWorkNode(this, possibleSolution, newDs);
             result.add(tree);
         }

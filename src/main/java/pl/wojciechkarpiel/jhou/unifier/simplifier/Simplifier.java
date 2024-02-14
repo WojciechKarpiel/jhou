@@ -87,23 +87,12 @@ public class Simplifier {
                     );
                     ds.add(dp); // TODO this is wrong pairs should be BetaEta with prefix, otherwise free variables here!
                 }
-                {
-                    System.out.println("Broke down ");
-                    System.out.println(a);
-                    System.out.println(b);
-                    System.out.println("into following");
-                    ds.forEach(System.out::println);
-                }
 
                 return Optional.of(ds);
             } else {
                 return Optional.empty();
             }
         } else {
-            System.out.println("Total mismatch, might be caused by  nonverified matcher projection, nagmi");
-            System.out.println(aN);
-            System.out.println(bN);
-            System.out.println("---");
             return Optional.empty();
         }
     }

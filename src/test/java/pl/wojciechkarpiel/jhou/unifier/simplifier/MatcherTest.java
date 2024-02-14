@@ -105,8 +105,6 @@ class MatcherTest {
         }
 
 
-//        SolutionIterator s = Unifier.unify(left, right);
-//        System.out.println(s.hasNext());
     }
 
 

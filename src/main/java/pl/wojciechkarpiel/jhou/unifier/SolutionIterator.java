@@ -53,7 +53,7 @@ public class SolutionIterator implements Iterator<Substitution> {
             throw new MaxSearchDepthExceededException();
         }
         expansionsSoFar++;
-        System.out.println("Expanding " + expansionsSoFar + " time");
+        System.out.println("Will expand the search tree for " + expansionsSoFar + "sh time");
         tree.expandOnce();
     }
 
@@ -77,7 +77,6 @@ public class SolutionIterator implements Iterator<Substitution> {
         if (weBack.isPresent()) {
             WeBackNode weSoBack = weBack.get();
             usedUpNodes.addUsedUpNode(weSoBack);
-            System.out.println("Providing solution");
             return weSoBack.fullSolution();
         } else {
             throw new NoSuchElementException();

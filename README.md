@@ -8,15 +8,27 @@ The implementation based on
 
 ## Usage
 
-Add following dependency to your project:
+Add following dependency to your project
+(after Github fixes [this issue](https://github.com/orgs/community/discussions/26634)):
 
 ```xml
 
-<dependency>
-  <groupId>pl.wojciechkarpiel</groupId>
-  <artifactId>jhou</artifactId>
-  <version>0.3</version>
-</dependency>
+<project>
+  <dependencies>
+    <dependency>
+      <groupId>pl.wojciechkarpiel</groupId>
+      <artifactId>jhou</artifactId>
+      <version>0.3</version>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>github-jhou</id>
+      <name>GitHub WojciechKarpiel Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/WojciechKarpiel/jhou</url>
+    </repository>
+  </repositories>
+</project>
 ```
 
 See the

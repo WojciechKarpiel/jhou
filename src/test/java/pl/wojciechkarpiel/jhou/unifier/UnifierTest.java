@@ -115,4 +115,27 @@ class UnifierTest {
         // TODO it should find 4 solutions, but duplicating each works too
         assertFalse(solutions.hasNext());
     }
+
+    @Test
+    void tryVoodo() {
+        // looking for solution y -> fn z1 z2. z2 (lam z1z2.z1)
+
+        Id.DANGEROUS_RESET_COUNTER(); //todo rm this hack
+
+        Type t = freshType();
+        Variable y = freshVariable(arrow(t, arrow(arrow(t, t), t)), "y");
+        Term c = freshConstant(t, "C");
+        Term l3l = app(app(y, c), abstraction(t, x -> x));
+
+        SolutionIterator s = Unifier.unify(l3l, c);
+        // TODO check, not only comment solutions :P
+        System.out.println(s.next()); // Substitution{[{y → λV_4.λV_5.C}]}
+        System.out.println(s.next()); // Substitution{[{y → λV_6.λV_7.V_6}]}
+        System.out.println(s.next()); // Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_11.λV_12.C}]}
+
+        // now the one I've been looking for <3
+        Substitution beautiful = s.next();
+        System.out.println(beautiful); // Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_13.λV_14.V_13}]}
+        assertEquals("Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_13.λV_14.V_13}]}", beautiful.toString());
+    }
 }

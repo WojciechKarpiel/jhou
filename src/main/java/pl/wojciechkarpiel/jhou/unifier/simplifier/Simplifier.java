@@ -31,11 +31,15 @@ public class Simplifier {
         while (ds.stream().anyMatch(d -> d.getType() == PairType.RIGID_RIGID)) {
             List<DisagreementPair> newL = new ArrayList<>();
             for (DisagreementPair d : ds) {
-                Optional<List<DisagreementPair>> q = breakdownRigidRigid(d.getMostRigid(), d.getLeastRigid());
-                if (q.isPresent()) {
-                    newL.addAll(q.get());
+                if (d.getType() == PairType.RIGID_RIGID) {
+                    Optional<List<DisagreementPair>> q = breakdownRigidRigid(d.getMostRigid(), d.getLeastRigid());
+                    if (q.isPresent()) {
+                        newL.addAll(q.get());
+                    } else {
+                        return NonUnifiable.INSTANCE;
+                    }
                 } else {
-                    return NonUnifiable.INSTANCE;
+                    newL.add(d);
                 }
             }
             ds = newL;

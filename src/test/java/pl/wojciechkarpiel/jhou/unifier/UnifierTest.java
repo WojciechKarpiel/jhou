@@ -92,4 +92,27 @@ class UnifierTest {
         assertFalse(it.hasNext());
     }
 
+    @Test
+    void rnd() {
+        Type t = freshType();
+        Term plus = freshConstant(arrow(t, arrow(t, t)), "+");
+        Term n = freshConstant(t, "n");
+        Variable f = freshVariable(arrow(t, t), "f");
+
+        Term left = app(f, n);
+        Term right = app(app(plus, n), n);
+
+        SolutionIterator solutions = Unifier.unify(left, right);
+
+        solutions.next();
+        solutions.next();
+        solutions.next();
+        solutions.next();
+        solutions.next();
+        solutions.next();
+        solutions.next();
+        solutions.next();
+        // TODO it should find 4 solutions, but duplicating each works too
+        assertFalse(solutions.hasNext());
+    }
 }

@@ -47,7 +47,7 @@ public class Main {
     Variable y = freshVariable(arrow(type, type), "y");
     Term left = abstraction(type, x -> app(y, app(c, app(y, x))));
     Term right = abstraction(type, x -> app(c, x));
-    // result is an iterator over possible substitutions that unify the two sider
+    // result is an iterator over possible substitutions that unify the two sides
     SolutionIterator result = unify(left, right);
     Substitution solution = result.next();
     System.out.println(solution);

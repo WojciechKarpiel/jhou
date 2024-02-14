@@ -2,6 +2,7 @@ package pl.wojciechkarpiel.jhou.termHead;
 
 import org.junit.jupiter.api.Test;
 import pl.wojciechkarpiel.jhou.ast.Abstraction;
+import pl.wojciechkarpiel.jhou.ast.Constant;
 import pl.wojciechkarpiel.jhou.ast.Term;
 import pl.wojciechkarpiel.jhou.ast.Variable;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
@@ -44,7 +45,6 @@ class BetaEtaNormalizerTest {
         Term back = bent.backToTerm();
         assertEquals(typeOf(vt), typeOf(back));
         assertEquals(vt, Normalizer.etaNormalize(back));
-        System.out.println(back);
     }
 
     @Test
@@ -55,5 +55,34 @@ class BetaEtaNormalizerTest {
         assertEquals(1, l.getBinder().size());
         assertEquals(0, l.getArguments().size());
         assertEquals(l.getHead().getTerm(), l.getBinder().get(0));
+    }
+
+
+    @Test
+    void nornor() {
+        Type a = freshType("a");
+        Type b = freshType("b");
+        Type c = freshType("c");
+        Type d = freshType("d");
+        Type abcd = arrow(a, arrow(b, arrow(c, d)));
+        Variable v = freshVariable(abcd, "v");
+
+        Type q = freshType("q");
+        Constant A = Constant.freshConstant(a, "A");
+        Term t = abstraction(q, "q", x -> app(v, A));
+        typeOf(t);
+        BetaEtaNormal ben = BetaEtaNormalizer.normalize(t);
+
+        assertEquals(t, etaNormalize(ben.backToTerm()));
+        assertEquals(3, ben.getBinder().size());
+        assertEquals(q, ben.getBinder().get(0).getType());
+        assertEquals(b, ben.getBinder().get(1).getType());
+        assertEquals(c, ben.getBinder().get(2).getType());
+        assertEquals(3, ben.getArguments().size());
+        assertEquals(a, typeOf(ben.getArguments().get(0)));
+        assertEquals(b, typeOf(ben.getArguments().get(1)));
+        assertEquals(c, typeOf(ben.getArguments().get(2)));
+        assertEquals(v, ben.getHead().getTerm());
+
     }
 }

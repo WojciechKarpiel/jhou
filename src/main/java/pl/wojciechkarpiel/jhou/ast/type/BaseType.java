@@ -7,18 +7,28 @@ import java.util.Objects;
 public class BaseType implements Type {
 
     private final Id id;
+    private final String name;
 
     public BaseType(Id id) {
+        this(id, null);
+    }
+
+    public BaseType(Id id, String name) {
         this.id = id;
+        this.name = name;
     }
 
     public static BaseType freshBaseType() {
         return new BaseType(Id.uniqueId());
     }
 
+    public static BaseType freshBaseType(String name) {
+        return new BaseType(Id.uniqueId(), name);
+    }
+
     @Override
     public String toString() {
-        return "T_" + id.getId();
+        return name != null ? name : "T_" + id.getId();
     }
 
     @Override

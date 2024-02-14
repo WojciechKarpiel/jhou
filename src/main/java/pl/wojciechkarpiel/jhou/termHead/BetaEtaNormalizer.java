@@ -17,12 +17,27 @@ class BetaEtaNormalizer {
         return BetaEtaNormalizer.normalize(term, new ArrayList<Variable>());
     }
 
+    static Term etaExpand(Term t) {
+        ArrowType at = (ArrowType) TypeCalculator.calculateType(t);
+        Variable v = Variable.freshVariable(at.getFrom());
+        return new Abstraction(v, new Application(t, v));
+    }
+
+    static Term etaExpand(Term t, int times) {
+        for (int i = 0; i < times; i++) {
+            t = etaExpand(t);
+        }
+        return t;
+    }
+
+
     static BetaEtaNormal normalize(Term term, List<Variable> outsideBinders) {
         BetaEtaNormalizer b = new BetaEtaNormalizer();
         b.binder.addAll(outsideBinders);
         final Term normalized = Normalizer.betaNormalize(term);
         Head h = b.normalizeInt(normalized);
 
+        Collections.reverse(b.arguments); // were collected in the brackwards order
 
         ////// ETA EXPANSION
         int n = b.binder.size();
@@ -31,25 +46,12 @@ class BetaEtaNormalizer {
 
         int etaExpansionNums = Math.max(0, m - n);
 
-        Type tt = TypeCalculator.calculateType(h.getTerm());
-        List<Variable> additionalBinders = new ArrayList<>(etaExpansionNums);
-        for (int i = 0; i < etaExpansionNums; i++) {
-            ArrowType at = ((ArrowType) tt);
-            Variable newBinder = Variable.freshVariable(at.getFrom());
-            additionalBinders.add(newBinder);
-            tt = at.getTo();
+        if (etaExpansionNums > 0) {
+            Term eted = injectInnerEta(normalized, etaExpansionNums);
+            return normalize(eted, outsideBinders);
         }
 
-
-        List<Term> finalArgs = new ArrayList<>(b.arguments.size() + additionalBinders.size());
-        finalArgs.addAll(additionalBinders);
-        Collections.reverse(b.arguments); // were collected in the brackwards order
-        finalArgs.addAll(b.arguments);
-
-//        Collections.reverse(additionalBinders);
-        b.binder.addAll(additionalBinders);
-
-        BetaEtaNormal result = new BetaEtaNormal(h, b.binder, finalArgs);
+        BetaEtaNormal result = new BetaEtaNormal(h, b.binder, b.arguments);
 
         {
             // sanity check
@@ -102,5 +104,29 @@ class BetaEtaNormalizer {
         });
     }
 
+
+    private static Term injectInnerEta(Term term, int times) {
+        return term.visit(new Visitor<Term>() {
+            @Override
+            public Term visitConstant(Constant constant) {
+                return etaExpand(constant, times);
+            }
+
+            @Override
+            public Term visitVariable(Variable variable) {
+                return etaExpand(variable, times);
+            }
+
+            @Override
+            public Term visitApplication(Application application) {
+                return etaExpand(application, times);
+            }
+
+            @Override
+            public Term visitAbstraction(Abstraction abstraction) {
+                return new Abstraction(abstraction.getVariable(), injectInnerEta(abstraction.getBody(), times));
+            }
+        });
+    }
 
 }

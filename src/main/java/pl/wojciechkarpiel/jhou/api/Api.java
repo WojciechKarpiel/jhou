@@ -29,6 +29,17 @@ public class Api {
     }
 
     /**
+     * Name is only for pretty-printing, two fresh constants of the same name are distinct.
+     * If you don't need pretty-printnig, use freshConstant(Type) variant
+     *
+     * @param name name of the constant
+     * @return fresh constant
+     */
+    public static Type freshType(String name) {
+        return BaseType.freshBaseType(name);
+    }
+
+    /**
      * @return fresh variable of type `type`
      */
     public static Variable freshVariable(Type type) {

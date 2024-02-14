@@ -8,8 +8,10 @@ import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
-import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
-import pl.wojciechkarpiel.jhou.unifier.Unifier;
+import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
+import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
+import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationResult;
+import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +52,7 @@ class MatcherTest {
         }
     }
 
+    //
     @Test
     void exampleFromPaper() {
         Type t = freshType();
@@ -102,8 +105,8 @@ class MatcherTest {
         }
 
 
-        SolutionIterator s = Unifier.unify(left, right);
-        System.out.println(s.hasNext());
+//        SolutionIterator s = Unifier.unify(left, right);
+//        System.out.println(s.hasNext());
     }
 
 
@@ -134,15 +137,17 @@ class MatcherTest {
         Type rightType = typeOf(right);
         assertEquals(eftType, rightType);
 
-        List<Term> match = Matcher.match(new Matcher.RigidFlexible(BetaEtaNormal.normalize(right), BetaEtaNormal.normalize(left)));
+        BetaEtaNormal noRight = BetaEtaNormal.normalize(right);
+        BetaEtaNormal noLeft = BetaEtaNormal.normalize(left);
+        SimplificationResult q = Simplifier.simplify(new DisagreementSet(ListUtil.of(new DisagreementPair(left, right))));
+        List<Term> match = Matcher.match(new Matcher.RigidFlexible(noRight, noLeft));
         assertEquals(3, match.size());
         Term imitator = match.get(0);
         {
             BetaEtaNormal imn = BetaEtaNormal.normalize(imitator);
             assertEquals(C, imn.getHead().getTerm());
             assertEquals(2, imn.getBinder().size());
-            assertEquals(2, imn.getArguments().size()); // todo paper example seems wrong q=1
-            // TODO inspect arguments
+            assertEquals(2, imn.getArguments().size());
         }
         {
             Term proj1 = match.get(1);
@@ -161,7 +166,7 @@ class MatcherTest {
         }
 
 
-        SolutionIterator s = Unifier.unify(left, right);
-        System.out.println(s.hasNext());
+//        SolutionIterator s = Unifier.unify(left, right);
+//        System.out.println(s.hasNext());
     }
 }

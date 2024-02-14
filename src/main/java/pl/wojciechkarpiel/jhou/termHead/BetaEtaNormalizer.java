@@ -41,11 +41,14 @@ class BetaEtaNormalizer {
         }
 
 
-        b.binder.addAll(additionalBinders); // additional could be rev, but not necessary
         List<Term> finalArgs = new ArrayList<>(b.arguments.size() + additionalBinders.size());
         finalArgs.addAll(additionalBinders);
         Collections.reverse(b.arguments); // were collected in the brackwards order
         finalArgs.addAll(b.arguments);
+
+//        Collections.reverse(additionalBinders);
+        b.binder.addAll(additionalBinders);
+
         return new BetaEtaNormal(h, b.binder, finalArgs);
 
 

@@ -2,8 +2,10 @@ package pl.wojciechkarpiel.jhou.termHead;
 
 import org.junit.jupiter.api.Test;
 import pl.wojciechkarpiel.jhou.ast.Abstraction;
+import pl.wojciechkarpiel.jhou.ast.Term;
 import pl.wojciechkarpiel.jhou.ast.Variable;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
+import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,6 +40,11 @@ class BetaEtaNormalizerTest {
         assertEquals(t, TypeCalculator.calculateType(bent.getArguments().get(0)));
         assertEquals(y, TypeCalculator.calculateType(bent.getArguments().get(1)));
         assertEquals(vt, bent.getHead().getTerm());
+
+        Term back = bent.backToTerm();
+        assertEquals(typeOf(vt), typeOf(back));
+        assertEquals(vt, Normalizer.etaNormalize(back));
+        System.out.println(back);
     }
 
     @Test

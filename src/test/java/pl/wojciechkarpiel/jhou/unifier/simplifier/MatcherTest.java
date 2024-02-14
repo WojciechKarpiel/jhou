@@ -4,14 +4,18 @@ import org.junit.jupiter.api.Test;
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
+import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
+import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
+import pl.wojciechkarpiel.jhou.unifier.Unifier;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static pl.wojciechkarpiel.jhou.api.Api.*;
 
 class MatcherTest {
 
@@ -44,5 +48,120 @@ class MatcherTest {
             // todo check binders and args
 
         }
+    }
+
+    @Test
+    void exampleFromPaper() {
+        Type t = freshType();
+        Term D = freshConstant(t, "D");
+        Term g = freshVariable(arrow(t, t), "g");
+        Term C = freshConstant(arrow(arrow(arrow(t, t), t), t), "C");
+        Term y = freshVariable(arrow(t, arrow(arrow(t, t), t)), "y");
+        Term left =
+                abstraction(t, "x1l", x1 ->
+                        abstraction(t, "x2l", x2 ->
+                                app(
+                                        app(y, D),
+                                        abstraction(t, "x3l", x3 -> app(g, x3))
+                                )));
+        Term right =
+                abstraction(t, "x1r", x1 ->
+                        abstraction(t, "x2r", x2 ->
+                                app(
+                                        C,
+                                        abstraction(arrow(t, t), "x3r", x3 -> app(x3, x2))
+                                )));
+        Type eftType = typeOf(left);
+        Type rightType = typeOf(right);
+        assertEquals(eftType, rightType);
+
+        List<Term> match = Matcher.match(new Matcher.RigidFlexible(BetaEtaNormal.normalize(right), BetaEtaNormal.normalize(left)));
+        assertEquals(3, match.size());
+        Term imitator = match.get(0);
+        {
+            BetaEtaNormal imn = BetaEtaNormal.normalize(imitator);
+            assertEquals(C, imn.getHead().getTerm());
+            assertEquals(2, imn.getBinder().size());
+            assertEquals(1, imn.getArguments().size()); // todo paper example seems wrong q=1
+            // TODO inspect arguments
+        }
+        {
+            Term proj1 = match.get(1);
+            BetaEtaNormal b1 = BetaEtaNormal.normalize(proj1);
+            assertEquals(2, b1.getBinder().size());
+            assertEquals(0, b1.getArguments().size());
+            assertEquals(b1.getBinder().get(0), b1.getHead().getTerm());
+        }
+
+        {
+            Term proj2 = match.get(2);
+            BetaEtaNormal b1 = BetaEtaNormal.normalize(proj2);
+            assertEquals(2, b1.getBinder().size());
+            assertEquals(1, b1.getArguments().size());
+            assertEquals(b1.getBinder().get(1), b1.getHead().getTerm());
+        }
+
+
+        SolutionIterator s = Unifier.unify(left, right);
+        System.out.println(s.hasNext());
+    }
+
+
+    @Test
+    void exampleFromPaper2() {
+        Type t = freshType();
+        Term D = freshConstant(t, "D");
+        Term g = freshVariable(arrow(t, t), "g");
+        Term C = freshConstant(arrow(arrow(t, t), arrow(t, t)), "C");
+        Term y = freshVariable(arrow(t, arrow(arrow(t, t), t)), "y");
+        Term left =
+                abstraction(t, "x1l", x1 ->
+                        abstraction(t, "x2l", x2 ->
+                                app(
+                                        app(y, D),
+                                        abstraction(t, "x3l", x3 -> app(g, x3))
+                                )));
+        Term right =
+                abstraction(t, "x1r", x1 ->
+                        abstraction(t, "x2r", x2 ->
+                                app(
+                                        app(
+                                                C,
+                                                abstraction(t, "x3r", x3 -> x3)
+                                        ),
+                                        x2)));
+        Type eftType = typeOf(left);
+        Type rightType = typeOf(right);
+        assertEquals(eftType, rightType);
+
+        List<Term> match = Matcher.match(new Matcher.RigidFlexible(BetaEtaNormal.normalize(right), BetaEtaNormal.normalize(left)));
+        assertEquals(3, match.size());
+        Term imitator = match.get(0);
+        {
+            BetaEtaNormal imn = BetaEtaNormal.normalize(imitator);
+            assertEquals(C, imn.getHead().getTerm());
+            assertEquals(2, imn.getBinder().size());
+            assertEquals(2, imn.getArguments().size()); // todo paper example seems wrong q=1
+            // TODO inspect arguments
+        }
+        {
+            Term proj1 = match.get(1);
+            BetaEtaNormal b1 = BetaEtaNormal.normalize(proj1);
+            assertEquals(2, b1.getBinder().size());
+            assertEquals(0, b1.getArguments().size());
+            assertEquals(b1.getBinder().get(0), b1.getHead().getTerm());
+        }
+
+        {
+            Term proj2 = match.get(2);
+            BetaEtaNormal b1 = BetaEtaNormal.normalize(proj2);
+            assertEquals(2, b1.getBinder().size());
+            assertEquals(1, b1.getArguments().size());
+            assertEquals(b1.getBinder().get(1), b1.getHead().getTerm());
+        }
+
+
+        SolutionIterator s = Unifier.unify(left, right);
+        System.out.println(s.hasNext());
     }
 }

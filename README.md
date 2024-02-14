@@ -43,8 +43,8 @@ public class Main {
    */
   public static void main(String[] args) {
     Type type = freshType(); // we work with typed lambda calculus, so we need some type
-    Term c = freshConstant(arrowType(type, type), "C");
-    Variable y = freshVariable(arrowType(type, type), "y");
+    Term c = freshConstant(arrow(type, type), "C");
+    Variable y = freshVariable(arrow(type, type), "y");
     Term left = abstraction(type, x -> app(y, app(c, app(y, x))));
     Term right = abstraction(type, x -> app(c, x));
     // result is an iterator over possible substitutions that unify the two sider
@@ -61,10 +61,6 @@ public class Main {
 
 * η-conversion is admitted (i.e. function extensionality assumed),
   see notes in chapter 4 of aforementioned paper
-
-Above claim is a smart-sounding claim from the paper, tbh I don't understand it fully,
-because the algorithm doesn't unify `λx.C x` and `C`,
-so not automatically doing eta conversion. If you're capable of clarifying, LMK please
 
 ## Implementation notes
 

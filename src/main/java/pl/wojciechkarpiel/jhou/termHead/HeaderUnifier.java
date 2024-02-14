@@ -56,7 +56,7 @@ public class HeaderUnifier {
                     throw new RuntimeException();
                 }
             });
-            return Optional.of(new BetaEtaNormal(hd, newRightBinders, newRightArgs));
+            return Optional.of(BetaEtaNormal.fromFakeNormal(hd, newRightBinders, newRightArgs));
         } else return Optional.empty();
     }
 }

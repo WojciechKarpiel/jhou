@@ -10,6 +10,7 @@ import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.substitution.SubstitutionPair;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static pl.wojciechkarpiel.jhou.api.Api.*;
 
 class UnifierTest {
 
@@ -65,7 +66,7 @@ class UnifierTest {
     }
 
     @Test
-    void etaNOTAUTOMATICALLYAdmitted() {
+    void etaAdmitted() {
         Type t = BaseType.freshBaseType();
         Type y = BaseType.freshBaseType();
         Constant f = Constant.freshConstant(new ArrowType(t, y), "F");
@@ -75,7 +76,20 @@ class UnifierTest {
         Term right = f;
         SolutionIterator result = Unifier.unify(left, f);
 
-//        assertTrue(result.next().getSubstitution().isEmpty()); // NO AUTO ETA
+        assertTrue(result.next().getSubstitution().isEmpty());
         assertFalse(result.hasNext());
     }
+
+
+    @Test
+    void unifyLam() {
+        Type t = freshType();
+        Term lamxx = abstraction(t, x -> x);
+        Variable v = freshVariable(arrow(t, t), "v");
+        SolutionIterator it = unify(lamxx, v);
+
+        assertEquals(new Substitution(v, lamxx), it.next());
+        assertFalse(it.hasNext());
+    }
+
 }

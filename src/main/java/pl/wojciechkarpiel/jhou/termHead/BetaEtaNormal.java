@@ -16,6 +16,12 @@ public class BetaEtaNormal {
         return BetaEtaNormalizer.normalize(term, outsideBinders);
     }
 
+    // go through proper normalization because substitution could have broken eta
+    // TODO: test for that
+    public static BetaEtaNormal fromFakeNormal(Head hd, List<Variable> newRightBinders, List<Term> newRightArgs) {
+        return normalize(new BetaEtaNormal(hd, newRightBinders, newRightArgs).backToTerm());
+    }
+
     public boolean isRigid() {
         return head.visit(new Head.HeadVisitor<Boolean>() {
             @Override
@@ -47,7 +53,7 @@ public class BetaEtaNormal {
     private final List<Variable> binder;
     private final List<Term> arguments;
 
-    public BetaEtaNormal(Head head, List<Variable> binder, List<Term> arguments) {
+    BetaEtaNormal(Head head, List<Variable> binder, List<Term> arguments) {
         this.head = head;
         this.binder = binder;
         this.arguments = arguments;

@@ -28,8 +28,12 @@ public class TypeCalculator {
                     Type argType = calculateType(arg);
                     if (fnTa.getFrom().equals(argType)) {
                         return fnTa.getTo();
-                    } else throw new TypeMismatchException("Arg type expected and given wrong:");
-                } else throw new TypeMismatchException(" not a fn");
+                    } else throw new TypeMismatchException("Arg type expected and given wrong: FN: "
+                            + fn + " arg: " + arg + "\n" +
+                            "FnFrom: " + fnTa.getFrom() + "\n" +
+                            "argT: " + argType + "\n" + "fullFNT: " + fnType
+                    );
+                } else throw new TypeMismatchException("not a fn: " + fn + " (tpe: " + fnType + ")\narg: " + arg);
             }
 
             @Override

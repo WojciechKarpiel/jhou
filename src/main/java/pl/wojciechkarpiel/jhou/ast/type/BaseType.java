@@ -18,7 +18,7 @@ public class BaseType implements Type {
 
     @Override
     public String toString() {
-        return "Type(" + id + ")";
+        return "T_" + id.getId();
     }
 
     @Override

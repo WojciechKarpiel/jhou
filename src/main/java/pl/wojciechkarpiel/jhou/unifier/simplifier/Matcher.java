@@ -102,11 +102,15 @@ public class Matcher {
         List<Term> args = new ArrayList<>(headType.arity());
         for (int j = 0; j < headType.arity(); j++) {
             Type targetType = headType;
+            for (int q = 0; q < j + 1; q++) { //todo test this its yolo
+                targetType = ((ArrowType) targetType).getFrom();
+            }
+
             for (int k = binders.size() - 1; k >= 0; k--) {
                 targetType = new ArrowType(binders.get(k).getType(), targetType);
             }
             Variable hi = new Variable(Id.uniqueId(), targetType);
-            BetaEtaNormal arg = new BetaEtaNormal(
+            BetaEtaNormal arg = BetaEtaNormal.fromFakeNormal(
                     new Head.HeadVariable(hi),
                     new ArrayList<>(),
                     new ArrayList<>(binders) // replacement binders are arg's argyments
@@ -114,7 +118,7 @@ public class Matcher {
             TypeCalculator.calculateType(arg.backToTerm()); //sanity check
             args.add(arg.backToTerm());
         }
-        Term term = new BetaEtaNormal(newHead, binders, args).backToTerm();
+        Term term = BetaEtaNormal.fromFakeNormal(newHead, binders, args).backToTerm();
         TypeCalculator.calculateType(term);
         return term;
     }
@@ -138,7 +142,7 @@ public class Matcher {
                 targetType = new ArrowType(binders.get(i).getType(), targetType);
             }
             Variable hi = new Variable(Id.uniqueId(), targetType);
-            BetaEtaNormal arg = new BetaEtaNormal(
+            BetaEtaNormal arg = BetaEtaNormal.fromFakeNormal(
                     new Head.HeadVariable(hi),
                     new ArrayList<>(),
                     new ArrayList<>(binders) // replacement binders are arg's arguments
@@ -147,7 +151,7 @@ public class Matcher {
             args.add(arg.backToTerm());
         }
 
-        Term term = new BetaEtaNormal(newHead, binders, args).backToTerm();
+        Term term = BetaEtaNormal.fromFakeNormal(newHead, binders, args).backToTerm();
         TypeCalculator.calculateType(term);
         return term;
     }

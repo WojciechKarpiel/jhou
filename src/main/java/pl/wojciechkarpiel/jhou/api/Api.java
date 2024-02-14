@@ -5,6 +5,7 @@ import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
+import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 import pl.wojciechkarpiel.jhou.unifier.Unifier;
 
@@ -60,7 +61,7 @@ public class Api {
         return Constant.freshConstant(type, name);
     }
 
-    public static Type arrowType(Type from, Type to) {
+    public static Type arrow(Type from, Type to) {
         return new ArrowType(from, to);
     }
 
@@ -76,8 +77,8 @@ public class Api {
         return Abstraction.fromLambda(variableType, abstraction);
     }
 
-    public static Term abstraction(Variable variable, Term body) {
-        return new Abstraction(variable, body);
+    public static Term abstraction(Type variableType, String variableName, Function<Variable, Term> abstraction) {
+        return Abstraction.fromLambda(variableType, abstraction, variableName);
     }
 
     public static Term betaNormalize(Term term) {
@@ -90,6 +91,10 @@ public class Api {
 
     public static Term betaEtaNormalize(Term term) {
         return Normalizer.betaEtaNormalize(term);
+    }
+
+    public static Type typeOf(Term term) {
+        return TypeCalculator.calculateType(term);
     }
 
     public static SolutionIterator unify(Term a, Term b) {

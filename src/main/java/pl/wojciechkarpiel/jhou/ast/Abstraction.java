@@ -23,6 +23,12 @@ public class Abstraction implements Term {
         return new Abstraction(v, body);
     }
 
+    public static Abstraction fromLambda(Type variableType, Function<Variable, Term> abstraction, String variableName) {
+        Variable v = Variable.freshVariable(variableType, variableName);
+        Term body = abstraction.apply(v);
+        return new Abstraction(v, body);
+    }
+
     public Variable getVariable() {
         return variable;
     }

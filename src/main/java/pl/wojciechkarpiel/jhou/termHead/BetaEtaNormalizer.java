@@ -1,8 +1,11 @@
 package pl.wojciechkarpiel.jhou.termHead;
 
 import pl.wojciechkarpiel.jhou.ast.*;
+import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
+import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
+import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,10 +20,36 @@ class BetaEtaNormalizer {
     static BetaEtaNormal normalize(Term term, List<Variable> outsideBinders) {
         BetaEtaNormalizer b = new BetaEtaNormalizer();
         b.binder.addAll(outsideBinders);
-        Term normalized = Normalizer.betaNormalize(term);
+        final Term normalized = Normalizer.betaNormalize(term);
         Head h = b.normalizeInt(normalized);
+
+
+        ////// ETA EXPANSION
+        int n = b.binder.size();
+        Type termType = TypeCalculator.calculateType(normalized);
+        int m = termType.arity();
+
+        int etaExpansionNums = Math.max(0, m - n);
+
+        Type tt = TypeCalculator.calculateType(h.getTerm());
+        List<Variable> additionalBinders = new ArrayList<>(etaExpansionNums);
+        for (int i = 0; i < etaExpansionNums; i++) {
+            ArrowType at = ((ArrowType) tt);
+            Variable newBinder = Variable.freshVariable(at.getFrom());
+            additionalBinders.add(newBinder);
+            tt = at.getTo();
+        }
+
+
+        b.binder.addAll(additionalBinders); // additional could be rev, but not necessary
+        List<Term> finalArgs = new ArrayList<>(b.arguments.size() + additionalBinders.size());
+        finalArgs.addAll(additionalBinders);
         Collections.reverse(b.arguments); // were collected in the brackwards order
-        return new BetaEtaNormal(h, b.binder, b.arguments);
+        finalArgs.addAll(b.arguments);
+        return new BetaEtaNormal(h, b.binder, finalArgs);
+
+
+
     }
 
     private final List<Variable> binder = new ArrayList<>();

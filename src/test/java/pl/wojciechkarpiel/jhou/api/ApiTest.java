@@ -20,8 +20,8 @@ class ApiTest {
     void apiUsageExample() {
         // GIVEN
         Type type = freshType(); // we work with typed lambda calculus, so we need some type
-        Term c = freshConstant(arrowType(type, type), "C");
-        Variable y = freshVariable(arrowType(type, type), "y");
+        Term c = freshConstant(arrow(type, type), "C");
+        Variable y = freshVariable(arrow(type, type), "y");
         Term left = abstraction(type, x -> app(y, app(c, app(y, x))));
         Term right = abstraction(type, x -> app(c, x));
 

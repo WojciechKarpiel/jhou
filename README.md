@@ -8,6 +8,17 @@ The implementation based on
 
 ## Usage
 
+Add following dependency to your project:
+
+```xml
+
+<dependency>
+  <groupId>pl.wojciechkarpiel</groupId>
+  <artifactId>jhou</artifactId>
+  <version>0.1</version>
+</dependency>
+```
+
 See the
 [API definition](src/main/java/pl/wojciechkarpiel/jhou/api/Api.java).
 
@@ -16,37 +27,33 @@ for an API usage example with walk-through comments.
 This is a quickstart disguised as a unit test.
 
 ```java
-/**
- * Example of unifying `λx.y (C (y x))` and `λx.C x`.
- * The result is `y → λx.x`
- */
-void apiUsageExample() {
-  // GIVEN
-  Type type = freshType(); // we work with typed lambda calculus, so we need some type
-  Term c = freshConstant(arrowType(type, type), "C");
-  Variable y = freshVariable(arrowType(type, type), "y");
-  Term left = abstraction(type, x -> app(y, app(c, app(y, x))));
-  Term right = abstraction(type, x -> app(c, x));
+import pl.wojciechkarpiel.jhou.ast.Term;
+import pl.wojciechkarpiel.jhou.ast.Variable;
+import pl.wojciechkarpiel.jhou.ast.type.Type;
+import pl.wojciechkarpiel.jhou.substitution.Substitution;
+import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 
-  // WHEN
-  // result is an iterator over possible substitutions that unify the two sider
-  SolutionIterator result = unify(left, right);
+import static pl.wojciechkarpiel.jhou.api.Api.*;
 
-  // THEN
-  assertTrue(result.hasNext());
-  Substitution solution = result.next();
-  assertFalse(result.hasNext()); // only one solution in this case
+public class Main {
 
-  // check if shape of substitution is the one we expect
-  Substitution expectedSolution = new Substitution(y, abstraction(type, x -> x));
-  assertEquals(expectedSolution, solution);
-
-  // let's also do the substitutions for the final check
-  assertNotEquals(left, right);
-  assertEquals(
-          betaNormalize(solution.substitute(left)),
-          betaNormalize(solution.substitute(right))
-  );
+  /**
+   * Example of unifying `λx.y (C (y x))` and `λx.C x`.
+   * The result is `y → λx.x`
+   */
+  public static void main(String[] args) {
+    Type type = freshType(); // we work with typed lambda calculus, so we need some type
+    Term c = freshConstant(arrowType(type, type), "C");
+    Variable y = freshVariable(arrowType(type, type), "y");
+    Term left = abstraction(type, x -> app(y, app(c, app(y, x))));
+    Term right = abstraction(type, x -> app(c, x));
+    // result is an iterator over possible substitutions that unify the two sider
+    SolutionIterator result = unify(left, right);
+    Substitution solution = result.next();
+    System.out.println(solution);
+    // prints: Substitution{[{y -> (fn[V_7]V_7)}]}
+    // fn[V_7]V_7 is λx.x
+  }
 }
 ```
 

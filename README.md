@@ -9,7 +9,7 @@ The implementation based on
 ## Usage
 
 For full API, see the
-[API definition](src/main/java/pl/wojciechkarpiel/api/Api.java).
+[API definition](src/main/java/pl/wojciechkarpiel/jhou/api/Api.java).
 
 **TODO**
 

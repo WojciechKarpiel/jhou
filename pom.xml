@@ -49,6 +49,26 @@
         </dependency>
     </dependencies>
 
+    <!--
+      unusable until https://github.com/orgs/community/discussions/26634 is solved
+      Usage:
+      <project>
+        <dependencies>
+          <dependency>
+            <groupId>pl.wojciechkarpiel</groupId>
+            <artifactId>jhou</artifactId>
+            <version>0.3</version>
+          </dependency>
+        </dependencies>
+        <repositories>
+          <repository>
+            <id>github-jhou</id>
+            <name>GitHub WojciechKarpiel Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/WojciechKarpiel/jhou</url>
+          </repository>
+        </repositories>
+      </project>
+     -->
     <distributionManagement>
         <repository>
             <id>github-jhou</id>

@@ -6,29 +6,33 @@ The library provides algorithm for higher-order unification.
 The implementation based on
 [this paper](https://www21.in.tum.de/teaching/sar/SS20/5.pdf).
 
-## Usage
+## Installation
 
 Add following dependency to your project
-(after Github fixes [this issue](https://github.com/orgs/community/discussions/26634)):
 
 ```xml
 <project>
-  <dependencies>
-    <dependency>
-      <groupId>pl.wojciechkarpiel</groupId>
-      <artifactId>jhou</artifactId>
-      <version>0.3</version>
-    </dependency>
-  </dependencies>
   <repositories>
     <repository>
-      <id>github-jhou</id>
-      <name>GitHub WojciechKarpiel Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/WojciechKarpiel/jhou</url>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
   </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.WojciechKarpiel</groupId>
+      <artifactId>jhou</artifactId>
+      <version>v0.3</version>
+    </dependency>
+  </dependencies>
 </project>
 ```
+
+If you're using other build tool (Gradle, SBT, Leiningen),
+[here](https://jitpack.io/#WojciechKarpiel/jhou)
+are the configuration snippets. `v0.3` is the newest release.
+
+## Usage
 
 See the
 [API definition](src/main/java/pl/wojciechkarpiel/jhou/api/Api.java).

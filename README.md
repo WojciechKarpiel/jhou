@@ -35,7 +35,7 @@ are the configuration snippets. `v0.3` is the newest release.
 ## Usage
 
 See the
-[API definition](src/main/java/pl/wojciechkarpiel/jhou/api/Api.java).
+[API definition](src/main/java/pl/wojciechkarpiel/jhou/Api.java).
 
 See this [unit test](src/test/java/pl/wojciechkarpiel/jhou/api/ApiTest.java)
 for an API usage example with walk-through comments.
@@ -48,7 +48,7 @@ import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 
-import static pl.wojciechkarpiel.jhou.api.Api.*;
+import static pl.wojciechkarpiel.jhou.Api.*;
 
 public class Main {
 

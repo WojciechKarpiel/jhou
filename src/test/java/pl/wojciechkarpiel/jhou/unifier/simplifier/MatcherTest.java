@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pl.wojciechkarpiel.jhou.api.Api.*;
+import static pl.wojciechkarpiel.jhou.Api.*;
 
 class MatcherTest {
 

@@ -17,7 +17,6 @@ public class BetaEtaNormal {
     }
 
     // go through proper normalization because substitution could have broken eta
-    // TODO: test for that
     public static BetaEtaNormal fromFakeNormal(Head hd, List<Variable> newRightBinders, List<Term> newRightArgs) {
         return normalize(new BetaEtaNormal(hd, newRightBinders, newRightArgs).backToTerm());
     }

@@ -4,4 +4,6 @@ public interface Type {
 
     int arity();
 
+    <T> T visit(TypeVisitor<T> visitor);
+
 }

@@ -8,7 +8,7 @@ import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pl.wojciechkarpiel.jhou.api.Api.*;
+import static pl.wojciechkarpiel.jhou.Api.*;
 
 class ApiTest {
 

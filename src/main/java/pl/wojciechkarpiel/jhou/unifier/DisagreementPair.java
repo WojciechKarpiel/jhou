@@ -36,7 +36,6 @@ public class DisagreementPair {
     }
 
 
-    // TODO cache
     public PairType getType() {
         return type;
     }

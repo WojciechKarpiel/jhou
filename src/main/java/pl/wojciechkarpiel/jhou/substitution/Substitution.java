@@ -21,12 +21,19 @@ public class Substitution {
         this.substitution = substitution;
     }
 
+    public static Substitution empty() {
+        return new Substitution(new ArrayList<>());
+    }
+
     public List<SubstitutionPair> getSubstitution() {
         return substitution;
     }
 
     public Term substitute(Term input) {
-        return new Substituter(substitution).substituteInt(input);
+        Substituter substituter = new Substituter(substitution);
+        if (!substitution.equals(substituter.substitution))
+            throw new RuntimeException();
+        return substituter.substituteInt(input);
     }
 
     @Override
@@ -51,8 +58,7 @@ public class Substitution {
         List<SubstitutionPair> substitution;
 
         private Substituter(List<SubstitutionPair> inSub) {
-            // todo is defensive copy needed?
-            this.substitution = new ArrayList<>(inSub);
+            this.substitution = inSub;
         }
 
         public Term substituteInt(Term input) {

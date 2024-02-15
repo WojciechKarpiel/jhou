@@ -1,7 +1,6 @@
 package pl.wojciechkarpiel.jhou.termHead;
 
 import pl.wojciechkarpiel.jhou.ast.*;
-import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
@@ -17,15 +16,10 @@ class BetaEtaNormalizer {
         return BetaEtaNormalizer.normalize(term, new ArrayList<Variable>());
     }
 
-    static Term etaExpand(Term t) {
-        ArrowType at = (ArrowType) TypeCalculator.calculateType(t);
-        Variable v = Variable.freshVariable(at.getFrom());
-        return new Abstraction(v, new Application(t, v));
-    }
 
     static Term etaExpand(Term t, int times) {
         for (int i = 0; i < times; i++) {
-            t = etaExpand(t);
+            t = Normalizer.etaExpand(t);
         }
         return t;
     }
@@ -62,7 +56,7 @@ class BetaEtaNormalizer {
             }
             BetaEtaNormal rr = new BetaEtaNormal(result.getHead(), clearBinders, result.getArguments());
             Term tttt = rr.backToTerm();
-            if (!Normalizer.etaNormalize(tttt).equals(Normalizer.etaNormalize(normalized))) {
+            if (!Normalizer.etaCompress(tttt).equals(Normalizer.etaCompress(normalized))) {
                 throw new RuntimeException();
             }
         }

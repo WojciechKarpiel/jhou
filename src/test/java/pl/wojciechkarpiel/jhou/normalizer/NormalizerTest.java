@@ -41,6 +41,6 @@ class NormalizerTest {
         Variable x = Variable.freshVariable(t, "x");
 
         Term abs = new Abstraction(x, new Application(f, x));
-        assertEquals(f, Normalizer.etaNormalize(abs));
+        assertEquals(f, Normalizer.etaCompress(abs));
     }
 }

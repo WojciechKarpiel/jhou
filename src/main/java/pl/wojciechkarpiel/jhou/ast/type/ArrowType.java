@@ -42,4 +42,9 @@ public class ArrowType implements Type {
     public int arity() {
         return 1 + to.arity();
     }
+
+    @Override
+    public <T> T visit(TypeVisitor<T> visitor) {
+        return visitor.visitArrowType(this);
+    }
 }

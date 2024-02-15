@@ -2,10 +2,20 @@ package pl.wojciechkarpiel.jhou.types;
 
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
+import pl.wojciechkarpiel.jhou.ast.type.BaseType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
+import pl.wojciechkarpiel.jhou.ast.type.TypeVisitor;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 
 public class TypeCalculator {
+
+    public static void ensureEqualTypes(Term a, Term b) {
+        Type aType = calculateType(a);
+        Type bType = calculateType(b);
+        if (!aType.equals(bType)) {
+            throw new TypeMismatchException(a, aType, b, bType);
+        }
+    }
 
     public static Type calculateType(Term term) {
         return term.visit(new Visitor<Type>() {
@@ -28,12 +38,8 @@ public class TypeCalculator {
                     Type argType = calculateType(arg);
                     if (fnTa.getFrom().equals(argType)) {
                         return fnTa.getTo();
-                    } else throw new TypeMismatchException("Arg type expected and given wrong: FN: "
-                            + fn + " arg: " + arg + "\n" +
-                            "FnFrom: " + fnTa.getFrom() + "\n" +
-                            "argT: " + argType + "\n" + "fullFNT: " + fnType
-                    );
-                } else throw new TypeMismatchException("not a fn: " + fn + " (tpe: " + fnType + ")\narg: " + arg);
+                    } else throw new WrongFunctionArgumentException(fn, fnTa, arg, argType);
+                } else throw new NotAFunctionException(fn, fnType);
             }
 
             @Override
@@ -41,6 +47,18 @@ public class TypeCalculator {
                 Type from = abstraction.getVariable().getType();
                 Type to = calculateType(abstraction.getBody());
                 return new ArrowType(from, to);
+            }
+        });
+    }
+
+    public static ArrowType ensureArrowType(Term term) {
+        return calculateType(term).visit(new TypeVisitor<ArrowType>() {
+            public ArrowType visitBaseType(BaseType baseType) {
+                throw new NotAFunctionException(term, baseType);
+            }
+
+            public ArrowType visitArrowType(ArrowType arrowType) {
+                return arrowType;
             }
         });
     }

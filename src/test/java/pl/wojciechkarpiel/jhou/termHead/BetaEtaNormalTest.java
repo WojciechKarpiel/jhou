@@ -1,10 +1,13 @@
 package pl.wojciechkarpiel.jhou.termHead;
 
 import org.junit.jupiter.api.Test;
+import pl.wojciechkarpiel.jhou.Api;
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
+import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
+import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.ArrayList;
 
@@ -117,4 +120,22 @@ class BetaEtaNormalTest {
         assertEquals(args, ben.getArguments());
     }
 
+    @Test
+    void brokenEta() {
+        Type t = Api.freshType("T");
+        Constant c = (Constant) Api.freshConstant(Api.arrow(t, t), "C");
+
+        Head.HeadConstant head = new Head.HeadConstant(c);
+        BetaEtaNormal fakeNormal =
+                new BetaEtaNormal(head, ListUtil.of(), ListUtil.of());
+        BetaEtaNormal realNormal =
+                BetaEtaNormal.fromFakeNormal(head, ListUtil.of(), ListUtil.of());
+
+        Term expanded = Api.etaExpand(c);
+        assertEquals(c, fakeNormal.backToTerm());
+        assertEquals(expanded, realNormal.backToTerm());
+        assertNotEquals(realNormal.backToTerm(), fakeNormal.backToTerm());
+        assertEquals(c, Api.etaContract(realNormal.backToTerm()));
+        assertEquals(expanded, Api.etaExpand(fakeNormal.backToTerm()));
+    }
 }

@@ -1,4 +1,4 @@
-package pl.wojciechkarpiel.jhou.api;
+package pl.wojciechkarpiel.jhou;
 
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
@@ -96,12 +96,26 @@ public class Api {
         return Normalizer.betaNormalize(term);
     }
 
-    public static Term etaNormalize(Term term) {
-        return Normalizer.etaNormalize(term);
+    /**
+     * Simplifies every occurrence of λx.fx  into f.
+     * Note that this is different from the eta-transformation
+     * in the beta-eta normal form
+     *
+     * @return term with every occurrence of λx.fx simplified into f
+     */
+    public static Term etaContract(Term term) {
+        return Normalizer.etaCompress(term);
     }
 
-    public static Term betaEtaNormalize(Term term) {
-        return Normalizer.betaEtaNormalize(term);
+    public static Term etaExpand(Term term) {
+        return Normalizer.etaExpand(term);
+    }
+
+    /**
+     * @return term in beta-eta normal form
+     */
+    public static Term betaEtaNormalForm(Term term) {
+        return Normalizer.betaEtaNormalForm(term);
     }
 
     public static Type typeOf(Term term) {

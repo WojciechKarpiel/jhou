@@ -1,8 +1,10 @@
 package pl.wojciechkarpiel.jhou.normalizer;
 
 import pl.wojciechkarpiel.jhou.ast.*;
+import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
+import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 import pl.wojciechkarpiel.jhou.util.MapUtil;
 
@@ -13,12 +15,12 @@ public class Normalizer {
     public static Term betaNormalize(Term term) {
         // sanity check to move somewhere else
         TypeCalculator.calculateType(term);
-        return new Normalizer().betaInternal(term);
+        return new Normalizer().betaNormalizeInternal(term);
     }
 
-    public static Term etaNormalize(Term term) {
+    public static Term etaCompress(Term term) {
         Type pre = TypeCalculator.calculateType(term);
-        Term normalized = etaNormalizeInternal(term);
+        Term normalized = etaCompressInternal(term);
         Type post = TypeCalculator.calculateType(normalized);
         if (!pre.equals(post)) { //sanity check
             throw new RuntimeException();
@@ -26,14 +28,20 @@ public class Normalizer {
         return normalized;
     }
 
-    public static Term betaEtaNormalize(Term term) {
-        return etaNormalize(betaNormalize(term));
+    public static Term betaEtaNormalForm(Term term) {
+        return BetaEtaNormal.normalize(term).backToTerm();
+    }
+
+    public static Term etaExpand(Term t) {
+        ArrowType at = TypeCalculator.ensureArrowType(t);
+        Variable v = Variable.freshVariable(at.getFrom());
+        return new Abstraction(v, new Application(t, v));
     }
 
     private Normalizer() {
     }
 
-    private static Term etaNormalizeInternal(Term term) {
+    private static Term etaCompressInternal(Term term) {
         return term.visit(new Visitor<Term>() {
             @Override
             public Term visitConstant(Constant constant) {
@@ -47,20 +55,19 @@ public class Normalizer {
 
             @Override
             public Term visitApplication(Application application) {
-                Term newFn = etaNormalizeInternal(application.getFunction());
-                Term newArg = etaNormalizeInternal(application.getArgument());
+                Term newFn = etaCompressInternal(application.getFunction());
+                Term newArg = etaCompressInternal(application.getArgument());
                 return new Application(newFn, newArg);
             }
 
             @Override
             public Term visitAbstraction(Abstraction abstraction) {
-                // DETECT ETA possiblility
                 Variable v = abstraction.getVariable();
-                Term body = etaNormalizeInternal(abstraction.getBody());
+                Term body = etaCompressInternal(abstraction.getBody());
                 if (body instanceof Application) {
                     Application app = (Application) body;
                     if (app.getArgument().equals(v)) {
-                        return etaNormalizeInternal(app.getFunction()); // lol can eta
+                        return etaCompressInternal(app.getFunction());
                     }
                 }
                 // nothing achieved;
@@ -71,7 +78,7 @@ public class Normalizer {
 
     private final MapUtil<Variable, Term> map = new MapUtil<>(new HashMap<>());
 
-    private Term betaInternal(Term term) {
+    private Term betaNormalizeInternal(Term term) {
         return term.visit(new Visitor<Term>() {
             public Term visitConstant(Constant constant) {
                 return constant;
@@ -82,24 +89,23 @@ public class Normalizer {
             }
 
             public Term visitApplication(Application application) {
-                Term normalizedFunction = betaInternal(application.getFunction());
-                Term normalizedArgument = betaInternal(application.getArgument());
+                Term normalizedFunction = betaNormalizeInternal(application.getFunction());
+                Term normalizedArgument = betaNormalizeInternal(application.getArgument());
                 if (normalizedFunction instanceof Abstraction) {
                     Abstraction abstraction = (Abstraction) normalizedFunction;
                     return map.withMapping(
                             abstraction.getVariable(),
                             normalizedArgument,
-                            () -> betaInternal(abstraction.getBody())
+                            () -> betaNormalizeInternal(abstraction.getBody())
                     );
                 } else {
-                    // TODO: is it allowed?
                     return new Application(normalizedFunction, normalizedArgument);
                 }
             }
 
             public Term visitAbstraction(Abstraction abstraction) {
                 Variable variable = abstraction.getVariable();
-                Term normalizedBody = map.withoutMapping(variable, () -> betaInternal(abstraction.getBody()));
+                Term normalizedBody = map.withoutMapping(variable, () -> betaNormalizeInternal(abstraction.getBody()));
                 return new Abstraction(variable, normalizedBody);
             }
         });

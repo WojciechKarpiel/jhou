@@ -72,13 +72,10 @@ public class Simplifier {
 
 
     public static Optional<List<DisagreementPair>> breakdownRigidRigid(BetaEtaNormal a, BetaEtaNormal b) {
-        BetaEtaNormal aN = (a);
-        BetaEtaNormal bN = (b);
-
-        if ((aN.getArguments().size() == bN.getArguments().size()) &&
-                (aN.getBinder().size() == bN.getBinder().size())) {
-
-            Optional<BetaEtaNormal> bnO = HeaderUnifier.alphaUnifyHeaderReturnNewRight(aN, bN);
+        if ((a.getArguments().size() == b.getArguments().size()) &&
+                (a.getBinder().size() == b.getBinder().size())) {
+            // TODO: check types, if we don't then we risk type exceptions!
+            Optional<BetaEtaNormal> bnO = HeaderUnifier.alphaUnifyHeaderReturnNewRight(a, b);
             if (bnO.isPresent()) {
                 BetaEtaNormal bNN = bnO.get();
 
@@ -86,10 +83,10 @@ public class Simplifier {
                 for (int i = 0; i < bNN.getArguments().size(); i++) {
 
                     DisagreementPair dp = new DisagreementPair(
-                            extract(aN, aN.getArguments().get(i)),
+                            extract(a, a.getArguments().get(i)),
                             extract(bNN, bNN.getArguments().get(i))
                     );
-                    ds.add(dp); // TODO this is wrong pairs should be BetaEta with prefix, otherwise free variables here!
+                    ds.add(dp);
                 }
 
                 return Optional.of(ds);

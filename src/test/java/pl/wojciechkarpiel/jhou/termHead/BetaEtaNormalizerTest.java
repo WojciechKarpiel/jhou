@@ -10,7 +10,7 @@ import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pl.wojciechkarpiel.jhou.api.Api.*;
+import static pl.wojciechkarpiel.jhou.Api.*;
 
 class BetaEtaNormalizerTest {
 
@@ -44,7 +44,7 @@ class BetaEtaNormalizerTest {
 
         Term back = bent.backToTerm();
         assertEquals(typeOf(vt), typeOf(back));
-        assertEquals(vt, Normalizer.etaNormalize(back));
+        assertEquals(vt, Normalizer.etaCompress(back));
     }
 
     @Test
@@ -73,7 +73,7 @@ class BetaEtaNormalizerTest {
         typeOf(t);
         BetaEtaNormal ben = BetaEtaNormalizer.normalize(t);
 
-        assertEquals(t, etaNormalize(ben.backToTerm()));
+        assertEquals(t, etaContract(ben.backToTerm()));
         assertEquals(3, ben.getBinder().size());
         assertEquals(q, ben.getBinder().get(0).getType());
         assertEquals(b, ben.getBinder().get(1).getType());

@@ -48,4 +48,9 @@ public class BaseType implements Type {
     public int arity() {
         return 0;
     }
+
+    @Override
+    public <T> T visit(TypeVisitor<T> visitor) {
+        return visitor.visitBaseType(this);
+    }
 }

@@ -57,7 +57,19 @@ public class SolutionIterator implements Iterator<Substitution> {
         tree.expandOnce();
     }
 
+    private WeBackNode tryNextCache = null;
+
+    private void resetCache() {
+        tryNextCache = null;
+    }
+
     private Optional<WeBackNode> tryNext() {
+        if (tryNextCache != null) return Optional.of(tryNextCache);
+        tryNextCache = tryNextSkipCache().orElse(null);
+        return Optional.ofNullable(tryNextCache);
+    }
+
+    private Optional<WeBackNode> tryNextSkipCache() {
         while (true) {
             if (itsOver()) return Optional.empty();
             if (weBack().isPresent()) return weBack();
@@ -75,6 +87,7 @@ public class SolutionIterator implements Iterator<Substitution> {
     public Substitution next() {
         Optional<WeBackNode> weBack = tryNext();
         if (weBack.isPresent()) {
+            resetCache();
             WeBackNode weSoBack = weBack.get();
             usedUpNodes.addUsedUpNode(weSoBack);
             return weSoBack.fullSolution();

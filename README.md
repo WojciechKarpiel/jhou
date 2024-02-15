@@ -22,7 +22,7 @@ Add following dependency to your project
     <dependency>
       <groupId>com.github.WojciechKarpiel</groupId>
       <artifactId>jhou</artifactId>
-      <version>v0.3</version>
+      <version>v0.4</version>
     </dependency>
   </dependencies>
 </project>
@@ -30,7 +30,7 @@ Add following dependency to your project
 
 If you're using other build tool (Gradle, SBT, Leiningen),
 [here](https://jitpack.io/#WojciechKarpiel/jhou)
-are the configuration snippets. `v0.3` is the newest release.
+are the configuration snippets. `v0.4` is the newest release.
 
 ## Usage
 

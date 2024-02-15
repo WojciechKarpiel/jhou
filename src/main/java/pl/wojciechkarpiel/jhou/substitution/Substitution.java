@@ -30,10 +30,7 @@ public class Substitution {
     }
 
     public Term substitute(Term input) {
-        Substituter substituter = new Substituter(substitution);
-        if (!substitution.equals(substituter.substitution))
-            throw new RuntimeException();
-        return substituter.substituteInt(input);
+        return new Substituter(substitution).substituteInt(input);
     }
 
     @Override

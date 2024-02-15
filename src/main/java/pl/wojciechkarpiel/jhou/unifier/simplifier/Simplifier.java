@@ -17,6 +17,7 @@ import pl.wojciechkarpiel.jhou.unifier.simplifier.result.NonUnifiable;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationNode;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationResult;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationSuccess;
+import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.*;
 
@@ -70,11 +71,17 @@ public class Simplifier {
         return new SimplificationNode(new DisagreementSet(ds));
     }
 
+    /**
+     * Remove arguments from the normal form and check the rest (i.e. the heading)
+     */
+    private static boolean equalHeadings(BetaEtaNormal a, BetaEtaNormal b) {
+        BetaEtaNormal aLol = BetaEtaNormal.fromFakeNormal(a.getHead(), a.getBinder(), ListUtil.of());
+        BetaEtaNormal bLol = BetaEtaNormal.fromFakeNormal(b.getHead(), b.getBinder(), ListUtil.of());
+        return aLol.backToTerm().equals(bLol.backToTerm());
+    }
 
     public static Optional<List<DisagreementPair>> breakdownRigidRigid(BetaEtaNormal a, BetaEtaNormal b) {
-        if ((a.getArguments().size() == b.getArguments().size()) &&
-                (a.getBinder().size() == b.getBinder().size())) {
-            // TODO: check types, if we don't then we risk type exceptions!
+        if ((a.getArguments().size() == b.getArguments().size()) && equalHeadings(a, b)) {
             Optional<BetaEtaNormal> bnO = HeaderUnifier.alphaUnifyHeaderReturnNewRight(a, b);
             if (bnO.isPresent()) {
                 BetaEtaNormal bNN = bnO.get();

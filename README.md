@@ -12,7 +12,6 @@ Add following dependency to your project
 (after Github fixes [this issue](https://github.com/orgs/community/discussions/26634)):
 
 ```xml
-
 <project>
   <dependencies>
     <dependency>

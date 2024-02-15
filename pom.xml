@@ -7,6 +7,33 @@
     <groupId>pl.wojciechkarpiel</groupId>
     <artifactId>jhou</artifactId>
     <version>0.4-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Higher-order unification library for JVM</description>
+    <url>https://github.com/WojciechKarpiel/jhou</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Wojciech Karpiel</name>
+            <email>w.karpiel@o2.pl</email>
+            <organization>WojciechKarpiel</organization>
+            <organizationUrl>https://www.wojciechkarpiel.pl</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/WojciechKarpiel/jhou.git</connection>
+        <developerConnection>scm:git:ssh://github.com:WojciechKarpiel/jhou.git</developerConnection>
+        <url>https://github.com/WojciechKarpiel/jhou</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

@@ -8,6 +8,7 @@ import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.substitution.SubstitutionPair;
+import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static pl.wojciechkarpiel.jhou.Api.*;
@@ -78,6 +79,9 @@ class UnifierTest {
 
         assertTrue(result.next().getSubstitution().isEmpty());
         assertFalse(result.hasNext());
+
+        assertTrue(alphaBetaEtaEqual(left, right));
+        assertFalse(alphaEqual(left, right));
     }
 
 
@@ -120,8 +124,6 @@ class UnifierTest {
     void tryVoodo() {
         // looking for solution y -> fn z1 z2. z2 (lam z1z2.z1)
 
-        Id.DANGEROUS_RESET_COUNTER(); //todo rm this hack
-
         Type t = freshType();
         Variable y = freshVariable(arrow(t, arrow(arrow(t, t), t)), "y");
         Term c = freshConstant(t, "C");
@@ -129,13 +131,29 @@ class UnifierTest {
 
         SolutionIterator s = Unifier.unify(l3l, c);
         // TODO check, not only comment solutions :P
-        System.out.println(s.next()); // Substitution{[{y → λV_4.λV_5.C}]}
-        System.out.println(s.next()); // Substitution{[{y → λV_6.λV_7.V_6}]}
-        System.out.println(s.next()); // Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_11.λV_12.C}]}
+
+        TestUtil.assertGoodSolution(s.next(), l3l, c);
+        TestUtil.assertGoodSolution(s.next(), l3l, c);
+        TestUtil.assertGoodSolution(s.next(), l3l, c);
 
         // now the one I've been looking for <3
         Substitution beautiful = s.next();
-        System.out.println(beautiful); // Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_13.λV_14.V_13}]}
-        assertEquals("Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_13.λV_14.V_13}]}", beautiful.toString());
+        TestUtil.assertGoodSolution(beautiful, l3l, c);
+        // `beautiful` is Substitution{[{y → λV_8.λV_9.(V_9 ((V_10 V_8) V_9))}, {V_10 → λV_13.λV_14.V_13}]}
+
+        assertEquals(2, beautiful.getSubstitution().size());
+        SubstitutionPair snd = beautiful.getSubstitution().get(1);
+
+        Variable v10v = freshVariable(arrow(t, arrow(arrow(t, t), t)), "v10");
+        Term v10t = abstraction(t, a1 -> abstraction(arrow(t, t), a2 -> a1));
+        assertEquals(v10v.getType(), typeOf(v10t));
+        assertEquals(snd.getVariable().getType(), v10v.getType());
+        assertEquals(snd.getTerm(), v10t);
+
+        Term expectedReplacement = abstraction(t, "z1", z1 ->
+                abstraction(arrow(t, t), "z2", z2 ->
+                        app(z2, app(app(snd.getVariable(), z1), z2))));
+        assertEquals(typeOf(expectedReplacement), typeOf(y));
+        assertEquals(expectedReplacement, beautiful.getSubstitution().get(0).getTerm());
     }
 }

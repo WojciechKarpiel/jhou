@@ -44,7 +44,7 @@ class BetaEtaNormalizerTest {
 
         Term back = bent.backToTerm();
         assertEquals(typeOf(vt), typeOf(back));
-        assertEquals(vt, Normalizer.etaCompress(back));
+        assertEquals(vt, Normalizer.etaContract(back));
     }
 
     @Test

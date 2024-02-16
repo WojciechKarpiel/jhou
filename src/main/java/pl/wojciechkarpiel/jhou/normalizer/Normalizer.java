@@ -18,7 +18,7 @@ public class Normalizer {
         return new Normalizer().betaNormalizeInternal(term);
     }
 
-    public static Term etaCompress(Term term) {
+    public static Term etaContract(Term term) {
         Type pre = TypeCalculator.calculateType(term);
         Term normalized = etaCompressInternal(term);
         Type post = TypeCalculator.calculateType(normalized);

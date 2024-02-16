@@ -6,9 +6,9 @@ import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
-import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
+import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
@@ -200,11 +200,11 @@ class MatcherTest {
                                         x2)));
 
         SolutionIterator s = Unifier.unify(left, right, 8);
-        assertGoodSolution(s.next(), left, right);
-        assertGoodSolution(s.next(), left, right);
-        assertGoodSolution(s.next(), left, right);
-        assertGoodSolution(s.next(), left, right);
-        assertGoodSolution(s.next(), left, right);
+        TestUtil.assertGoodSolution(s.next(), left, right);
+        TestUtil.assertGoodSolution(s.next(), left, right);
+        TestUtil.assertGoodSolution(s.next(), left, right);
+        TestUtil.assertGoodSolution(s.next(), left, right);
+        TestUtil.assertGoodSolution(s.next(), left, right);
         assertFalse(s.hasNext());
     }
 
@@ -231,14 +231,6 @@ class MatcherTest {
 
 
         SolutionIterator s = Unifier.unify(left, right);
-        assertGoodSolution(s.next(), left, right);
-    }
-
-    private void assertGoodSolution(Substitution s, Term a, Term b) {
-        Term as = s.substitute(a);
-        Term bs = s.substitute(b);
-        Term ac = etaContract(betaNormalize(as));
-        Term bc = etaContract(betaNormalize(bs));
-        assertEquals(ac, bc);
+        TestUtil.assertGoodSolution(s.next(), left, right);
     }
 }

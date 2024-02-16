@@ -34,11 +34,4 @@ public class Id {
     public int hashCode() {
         return id;
     }
-
-    /**
-     * DO NOT USE. hack for tests
-     */
-    public static void DANGEROUS_RESET_COUNTER() {
-        COUNTER = 0;
-    }
 }

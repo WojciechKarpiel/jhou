@@ -104,7 +104,7 @@ public class Api {
      * @return term with every occurrence of λx.fx simplified into f
      */
     public static Term etaContract(Term term) {
-        return Normalizer.etaCompress(term);
+        return Normalizer.etaContract(term);
     }
 
     public static Term etaExpand(Term term) {
@@ -120,6 +120,14 @@ public class Api {
 
     public static Type typeOf(Term term) {
         return TypeCalculator.calculateType(term);
+    }
+
+    public static boolean alphaEqual(Term a, Term b) {
+        return Equality.alphaEqual(a, b);
+    }
+
+    public static boolean alphaBetaEtaEqual(Term a, Term b) {
+        return Equality.alphaBetaEtaEqual(a, b);
     }
 
     public static SolutionIterator unify(Term a, Term b) {

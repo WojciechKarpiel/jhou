@@ -56,7 +56,7 @@ class BetaEtaNormalizer {
             }
             BetaEtaNormal rr = new BetaEtaNormal(result.getHead(), clearBinders, result.getArguments());
             Term tttt = rr.backToTerm();
-            if (!Normalizer.etaCompress(tttt).equals(Normalizer.etaCompress(normalized))) {
+            if (!Normalizer.etaContract(tttt).equals(Normalizer.etaContract(normalized))) {
                 throw new RuntimeException();
             }
         }

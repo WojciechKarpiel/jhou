@@ -5,24 +5,36 @@ import pl.wojciechkarpiel.jhou.unifier.tree.Tree;
 import pl.wojciechkarpiel.jhou.unifier.tree.UsedUpNodes;
 import pl.wojciechkarpiel.jhou.unifier.tree.WeBackNode;
 
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class SolutionIterator implements Iterator<Substitution> {
     public static final int UNLIMITED_ITERATIONS = -1;
+    public static final PrintStream DEFAULT_PRINT_STREAM = System.out;
 
     private final UsedUpNodes usedUpNodes;
     private final Tree tree;
+    private final PrintStream printStream;
     private final int maxSearchDepth;
     private int expansionsSoFar;
 
     public SolutionIterator(Tree tree) {
-        this(tree, UNLIMITED_ITERATIONS);
+        this(tree, DEFAULT_PRINT_STREAM);
+    }
+
+    public SolutionIterator(Tree tree, PrintStream printStream) {
+        this(tree, UNLIMITED_ITERATIONS, printStream);
     }
 
     public SolutionIterator(Tree tree, int maxSearchDepth) {
+        this(tree, maxSearchDepth, DEFAULT_PRINT_STREAM);
+    }
+
+    public SolutionIterator(Tree tree, int maxSearchDepth, PrintStream printStream) {
         this.tree = tree;
+        this.printStream = printStream;
         if (maxSearchDepth < 0) {
             this.maxSearchDepth = Integer.MAX_VALUE;
         } else {
@@ -42,7 +54,7 @@ public class SolutionIterator implements Iterator<Substitution> {
 
     private boolean couldExpand() {
         if (expansionsSoFar >= maxSearchDepth) {
-            System.out.println("Max search depth reached, aborting");
+            printStream.println("Max search depth reached, aborting");
             return false;
         }
         return !(itsOver() || weBack().isPresent());
@@ -53,7 +65,7 @@ public class SolutionIterator implements Iterator<Substitution> {
             throw new MaxSearchDepthExceededException();
         }
         expansionsSoFar++;
-        System.out.println("Will expand the search tree for " + expansionsSoFar + "sh time");
+        printStream.println("Will expand the search tree for " + expansionsSoFar + "sh time");
         tree.expandOnce();
     }
 

@@ -9,6 +9,7 @@ import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 import pl.wojciechkarpiel.jhou.unifier.Unifier;
 
+import java.io.PrintStream;
 import java.util.function.Function;
 
 /**
@@ -136,5 +137,13 @@ public class Api {
 
     public static SolutionIterator unify(Term a, Term b, int maxIterations) {
         return Unifier.unify(a, b, maxIterations);
+    }
+
+    public static SolutionIterator unify(Term a, Term b, PrintStream printStream) {
+        return Unifier.unify(a, b, printStream);
+    }
+
+    public static SolutionIterator unify(Term a, Term b, int maxIterations, PrintStream printStream) {
+        return Unifier.unify(a, b, maxIterations, printStream);
     }
 }

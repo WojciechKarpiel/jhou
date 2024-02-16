@@ -30,7 +30,11 @@ public class Substitution {
     }
 
     public Term substitute(Term input) {
-        return new Substituter(substitution).substituteInt(input);
+        Term result = input;
+        for (SubstitutionPair substitutionPair : substitution) {
+            result = new Substituter(substitutionPair).substituteInt(result);
+        }
+        return result;
     }
 
     @Override
@@ -52,9 +56,9 @@ public class Substitution {
     }
 
     private static class Substituter {
-        List<SubstitutionPair> substitution;
+        SubstitutionPair substitution;
 
-        private Substituter(List<SubstitutionPair> inSub) {
+        private Substituter(SubstitutionPair inSub) {
             this.substitution = inSub;
         }
 
@@ -67,10 +71,11 @@ public class Substitution {
 
                 @Override
                 public Term visitVariable(Variable variable) {
-                    return substitution.stream()
-                            .filter(p -> p.getVariable().equals(variable))
-                            .map(SubstitutionPair::getTerm)
-                            .findFirst().orElse(variable);
+                    if (Substituter.this.substitution.getVariable().equals(variable)) {
+                        return Substituter.this.substitution.getTerm();
+                    } else {
+                        return variable;
+                    }
                 }
 
                 @Override
@@ -86,22 +91,17 @@ public class Substitution {
                     Variable v = abstraction.getVariable();
                     int i;
                     Optional<SubstitutionPair> oldPair = Optional.empty();
-                    for (i = 0; i < substitution.size(); i++) {
-                        SubstitutionPair substitutionPair = substitution.get(i);
-                        if (substitutionPair.getVariable().equals(v)) {
-                            oldPair = Optional.of(substitutionPair);
-                            substitution.set(i, new SubstitutionPair(v, v));
-                            break;
-                        }
+                    if (v.equals(Substituter.this.substitution.getVariable())) {
+                        oldPair = Optional.of(Substituter.this.substitution);
+                        Substituter.this.substitution = new SubstitutionPair(v, v);
                     }
                     Term ret = new Abstraction(
                             abstraction.getVariable(),
                             substituteInt(abstraction.getBody())
                     );
                     if (oldPair.isPresent()) {
-                        substitution.set(i, oldPair.get());
+                        Substituter.this.substitution = oldPair.get();
                     }
-
                     return ret;
                 }
             });

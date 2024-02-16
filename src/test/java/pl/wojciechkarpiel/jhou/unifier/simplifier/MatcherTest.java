@@ -6,10 +6,13 @@ import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
+import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
+import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
+import pl.wojciechkarpiel.jhou.unifier.Unifier;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationResult;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
 
@@ -20,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static pl.wojciechkarpiel.jhou.Api.*;
 
 class MatcherTest {
+    public static final int MAX_ITER_NONFINDABLE = 6;
 
     @Test
     void l3l() {
@@ -105,6 +109,8 @@ class MatcherTest {
         }
 
 
+        SolutionIterator s = Unifier.unify(left, right, MAX_ITER_NONFINDABLE);
+        assertFalse(s.hasNext());
     }
 
 
@@ -164,7 +170,75 @@ class MatcherTest {
         }
 
 
-//        SolutionIterator s = Unifier.unify(left, right);
-//        System.out.println(s.hasNext());
+        SolutionIterator s = Unifier.unify(left, right, MAX_ITER_NONFINDABLE);
+        assertFalse(s.hasNext());
+    }
+
+
+    @Test
+    void exampleFromPaper2solvable() {
+        Type t = freshType();
+        Term D = freshConstant(t, "D");
+        Term g = freshVariable(arrow(t, t), "g");
+        Term C = freshConstant(arrow(arrow(t, t), arrow(t, t)), "C");
+        Term y = freshVariable(arrow(t, arrow(arrow(t, t), t)), "y");
+        Term left =
+                abstraction(t, "x1l", x1 ->
+                        abstraction(t, "x2l", x2 ->
+                                app(
+                                        app(y, D),
+                                        abstraction(t, "x3l", x3 -> app(g, x2))
+                                )));
+        Term right =
+                abstraction(t, "x1r", x1 ->
+                        abstraction(t, "x2r", x2 ->
+                                app(
+                                        app(
+                                                C,
+                                                abstraction(t, "x3r", x3 -> x3)
+                                        ),
+                                        x2)));
+
+        SolutionIterator s = Unifier.unify(left, right, 8);
+        assertGoodSolution(s.next(), left, right);
+        assertGoodSolution(s.next(), left, right);
+        assertGoodSolution(s.next(), left, right);
+        assertGoodSolution(s.next(), left, right);
+        assertGoodSolution(s.next(), left, right);
+        assertFalse(s.hasNext());
+    }
+
+    @Test
+    void exampleFromPaperSolvable() {
+        Type t = freshType();
+        Term g = freshVariable(arrow(t, t), "g");
+        Term C = freshConstant(arrow(arrow(arrow(t, t), t), t), "C");
+        Term y = freshVariable(arrow(t, arrow(arrow(t, t), t)), "y");
+        Term left =
+                abstraction(t, "x1l", x1 ->
+                        abstraction(t, "x2l", x2 ->
+                                app(
+                                        app(y, x2),
+                                        abstraction(t, "x3l", x3 -> app(g, x3))
+                                )));
+        Term right =
+                abstraction(t, "x1r", x1 ->
+                        abstraction(t, "x2r", x2 ->
+                                app(
+                                        C,
+                                        abstraction(arrow(t, t), "x3r", x3 -> app(x3, x2))
+                                )));
+
+
+        SolutionIterator s = Unifier.unify(left, right);
+        assertGoodSolution(s.next(), left, right);
+    }
+
+    private void assertGoodSolution(Substitution s, Term a, Term b) {
+        Term as = s.substitute(a);
+        Term bs = s.substitute(b);
+        Term ac = etaContract(betaNormalize(as));
+        Term bc = etaContract(betaNormalize(bs));
+        assertEquals(ac, bc);
     }
 }

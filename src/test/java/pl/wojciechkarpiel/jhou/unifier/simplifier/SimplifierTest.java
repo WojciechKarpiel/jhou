@@ -78,16 +78,17 @@ class SimplifierTest {
         assertTrue(r.isPresent());
         assertEquals(2, r.get().size());
 
-
+        Variable newX1;
         {
             // first is \x.x
             DisagreementPair fdp = r.get().get(0);
             assertEquals(PairType.RIGID_RIGID, fdp.getType());
             // This can break and x2 could be instead!!!!
-            assertEquals(x1, fdp.getMostRigid().getHead().getTerm());
-            assertEquals(x1, fdp.getLeastRigid().getHead().getTerm());
+            newX1 = (Variable) fdp.getMostRigid().getHead().getTerm();
+//            assertEquals(x1, newX1);
+            assertEquals(newX1, fdp.getLeastRigid().getHead().getTerm());
             List<Variable> p1 = new ArrayList<>();
-            p1.add(x1);
+            p1.add(newX1);
             assertEquals(p1, fdp.getMostRigid().getBinder());
             assertEquals(p1, fdp.getLeastRigid().getBinder());
             assertTrue(fdp.getLeastRigid().getArguments().isEmpty());
@@ -101,7 +102,7 @@ class SimplifierTest {
             assertEquals(d, fdp.getMostRigid().getHead().getTerm());
             assertEquals(a, fdp.getLeastRigid().getHead().getTerm());
             List<Variable> p1 = new ArrayList<>();
-            p1.add(x1);
+            p1.add(newX1);
             assertEquals(p1, fdp.getMostRigid().getBinder());
             assertEquals(p1, fdp.getLeastRigid().getBinder());
             assertTrue(fdp.getLeastRigid().getArguments().isEmpty());

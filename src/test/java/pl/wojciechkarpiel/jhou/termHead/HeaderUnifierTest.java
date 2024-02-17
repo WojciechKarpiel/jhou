@@ -2,6 +2,7 @@ package pl.wojciechkarpiel.jhou.termHead;
 
 import org.junit.jupiter.api.Test;
 import pl.wojciechkarpiel.jhou.Api;
+import pl.wojciechkarpiel.jhou.alpha.AlphaEqual;
 import pl.wojciechkarpiel.jhou.ast.Abstraction;
 import pl.wojciechkarpiel.jhou.ast.Constant;
 import pl.wojciechkarpiel.jhou.ast.Term;
@@ -30,10 +31,11 @@ class HeaderUnifierTest {
 
         assertNotEquals(a, b);
 
-        Optional<BetaEtaNormal> co = HeaderUnifier.alphaUnifyHeaderReturnNewRight(a, b);
+        Optional<AlphaEqual.BenPair> co = AlphaEqual.alphaEqualizeHeading(a, b);
         assertTrue(co.isPresent());
-        BetaEtaNormal c = co.get();
-        assertEquals(a, c);
+        AlphaEqual.BenPair c = co.get();
+        assertEquals(freshLamxx(t), c.getLeft().backToTerm());
+        assertEquals(freshLamxx(t), c.getRight().backToTerm());
     }
 
     @Test
@@ -46,7 +48,7 @@ class HeaderUnifierTest {
 
         assertNotEquals(a, b);
 
-        Optional<BetaEtaNormal> co = HeaderUnifier.alphaUnifyHeaderReturnNewRight(a, b);
+        Optional<AlphaEqual.BenPair> co = AlphaEqual.alphaEqualizeHeading(a, b);
         assertFalse(co.isPresent());
     }
 
@@ -57,7 +59,7 @@ class HeaderUnifierTest {
         Term lamxx = new Abstraction(x, x);
         Variable y = Variable.freshVariable(xt, "y");
         Term lamyy = new Abstraction(y, y);
-        assertTrue(HeaderUnifier.headAlphaUnifiable(lamxx, lamyy));
+        assertTrue(AlphaEqual.headAlphaUnifiable(lamxx, lamyy));
     }
 
     @Test
@@ -65,7 +67,7 @@ class HeaderUnifierTest {
         Type xt = BaseType.freshBaseType();
         Constant x = Constant.freshConstant(xt, "x");
         Constant y = Constant.freshConstant(xt, "y");
-        assertFalse(HeaderUnifier.headAlphaUnifiable(x, y));
+        assertFalse(AlphaEqual.headAlphaUnifiable(x, y));
     }
 
     @Test
@@ -73,6 +75,6 @@ class HeaderUnifierTest {
         Type xt = BaseType.freshBaseType();
         Constant x = Constant.freshConstant(xt, "x");
         Constant y = new Constant(x.getId(), x.getType());
-        assertTrue(HeaderUnifier.headAlphaUnifiable(x, y));
+        assertTrue(AlphaEqual.headAlphaUnifiable(x, y));
     }
 }

@@ -1,13 +1,11 @@
 package pl.wojciechkarpiel.jhou.termHead;
 
-import pl.wojciechkarpiel.jhou.ast.Constant;
-import pl.wojciechkarpiel.jhou.ast.Term;
-import pl.wojciechkarpiel.jhou.ast.Variable;
+import pl.wojciechkarpiel.jhou.ast.*;
+import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 
 import java.util.Objects;
 
 public interface Head {
-
 
     <T> T visit(HeadVisitor<T> visitor);
 
@@ -100,5 +98,29 @@ public interface Head {
 
         T visitVariable(Variable variable);
 
+    }
+
+    static Head fromTerm(Term head) {
+        return head.visit(new Visitor<Head>() {
+            @Override
+            public Head visitConstant(Constant constant) {
+                return new HeadConstant(constant);
+            }
+
+            @Override
+            public Head visitVariable(Variable variable) {
+                return new HeadVariable(variable);
+            }
+
+            @Override
+            public Head visitApplication(Application application) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public Head visitAbstraction(Abstraction abstraction) {
+                throw new RuntimeException();
+            }
+        });
     }
 }

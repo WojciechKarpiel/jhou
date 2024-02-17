@@ -38,24 +38,19 @@ public class Matcher {
         }
 
 
-        // below methods use names from paper, eases confusion when translating paper into code, will refactor later TODO
-        public int getN() {
-            return getRigid().getBinder().size();
-        }
-
-        public int getP() {
+        public int flexibleTermArgumentsSize() {
             return getFlexible().getArguments().size();
         }
 
-        public List<Term> underP() {
+        public List<Term> flexibleTermArguments() {
             return getFlexible().getArguments();
         }
 
-        public int getQ() {
+        public int rigidTermsArgumentsSize() {
             return getRigid().getArguments().size();
         }
 
-        public List<Term> underQ() {
+        public List<Term> rigidTermArguments() {
             return getRigid().getArguments();
         }
     }
@@ -92,8 +87,8 @@ public class Matcher {
     }
 
     public static List<Term> projections(RigidFlexible rigidFlexible) {
-        List<Term> res = new ArrayList<>(rigidFlexible.getP());
-        for (int i = 0; i < rigidFlexible.getP(); i++) {
+        List<Term> res = new ArrayList<>(rigidFlexible.flexibleTermArgumentsSize());
+        for (int i = 0; i < rigidFlexible.flexibleTermArgumentsSize(); i++) {
             Term e = projForBinder(i, rigidFlexible);
             // yooo check if the type matches
             Type pType = TypeCalculator.calculateType(e);
@@ -137,8 +132,8 @@ public class Matcher {
     }
 
     private static List<Variable> getPBinders(RigidFlexible rigidFlexible) {
-        List<Variable> binders = new ArrayList<>(rigidFlexible.getP());
-        for (Term flexibleArg : rigidFlexible.underP()) {
+        List<Variable> binders = new ArrayList<>(rigidFlexible.flexibleTermArgumentsSize());
+        for (Term flexibleArg : rigidFlexible.flexibleTermArguments()) {
             Variable v = new Variable(Id.uniqueId(), TypeCalculator.calculateType(flexibleArg));
             binders.add(v);
         }
@@ -148,8 +143,8 @@ public class Matcher {
     public static Term imitate(RigidFlexible rigidFlexible) {
         List<Variable> binders = getPBinders(rigidFlexible);
         Head newHead = rigidFlexible.getRigid().getHead();
-        List<Term> args = new ArrayList<>(rigidFlexible.getQ());
-        for (Term rigidArg : rigidFlexible.underQ()) {
+        List<Term> args = new ArrayList<>(rigidFlexible.rigidTermsArgumentsSize());
+        for (Term rigidArg : rigidFlexible.rigidTermArguments()) {
             Type targetType = TypeCalculator.calculateType(rigidArg);
             for (int i = binders.size() - 1; i >= 0; i--) {
                 targetType = new ArrowType(binders.get(i).getType(), targetType);

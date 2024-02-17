@@ -11,10 +11,12 @@ public class WeBackNode implements Tree {
 
     private final Tree parent;
     private final Substitution substitution;
+    private boolean usedUp;
 
     public WeBackNode(Tree parent, Substitution substitution) {
         this.parent = parent;
         this.substitution = substitution;
+        this.usedUp = false;
     }
 
     public Substitution getSubstitution() {
@@ -26,13 +28,13 @@ public class WeBackNode implements Tree {
     }
 
     @Override
-    public boolean itsOver(UsedUpNodes usedUpNodes) {
-        return !weBack(usedUpNodes).isPresent();
+    public boolean itsOver() {
+        return usedUp;
     }
 
     @Override
-    public Optional<WeBackNode> weBack(UsedUpNodes usedUpNodes) {
-        if (usedUpNodes.isUsedUp(this)) return Optional.empty();
+    public Optional<WeBackNode> weBack() {
+        if (itsOver()) return Optional.empty();
         else return Optional.of(this);
     }
 
@@ -57,5 +59,9 @@ public class WeBackNode implements Tree {
             r.addAll(s.getSubstitution());
         }
         return new Substitution(r);
+    }
+
+    public void markUsedUp() {
+        this.usedUp = true;
     }
 }

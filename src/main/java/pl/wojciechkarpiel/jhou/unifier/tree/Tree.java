@@ -9,9 +9,9 @@ public interface Tree {
     // Null at tree root
     Tree getParent();
 
-    boolean itsOver(UsedUpNodes usedUpNodes);
+    boolean itsOver();
 
-    Optional<WeBackNode> weBack(UsedUpNodes usedUpNodes);
+    Optional<WeBackNode> weBack();
 
     void expandOnce();
 

@@ -34,16 +34,23 @@ public class WorkWorkNode implements Tree {
     }
 
     @Override
-    public boolean itsOver(UsedUpNodes usedUpNodes) {
+    public boolean itsOver() {
         if (children == null) return false;
-        else return children.stream().allMatch(c -> c.itsOver(usedUpNodes));
+        else {
+            boolean itsOver = children.stream().allMatch(Tree::itsOver);
+            // prune the tree
+            if (itsOver) {
+                children = ListUtil.of(new NagmiNode(this));
+            }
+            return itsOver;
+        }
     }
 
     @Override
-    public Optional<WeBackNode> weBack(UsedUpNodes usedUpNodes) {
+    public Optional<WeBackNode> weBack() {
         if (children == null) return Optional.empty();
         return children.stream()
-                .map(c -> c.weBack(usedUpNodes))
+                .map(Tree::weBack)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();

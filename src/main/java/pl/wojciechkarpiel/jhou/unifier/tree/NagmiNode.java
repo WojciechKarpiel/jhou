@@ -16,12 +16,12 @@ public class NagmiNode implements Tree {
     }
 
     @Override
-    public boolean itsOver(UsedUpNodes usedUpNodes) {
+    public boolean itsOver() {
         return true;
     }
 
     @Override
-    public Optional<WeBackNode> weBack(UsedUpNodes usedUpNodes) {
+    public Optional<WeBackNode> weBack() {
         return Optional.empty();
     }
 

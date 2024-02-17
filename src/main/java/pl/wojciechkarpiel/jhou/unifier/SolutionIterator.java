@@ -2,7 +2,6 @@ package pl.wojciechkarpiel.jhou.unifier;
 
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.unifier.tree.Tree;
-import pl.wojciechkarpiel.jhou.unifier.tree.UsedUpNodes;
 import pl.wojciechkarpiel.jhou.unifier.tree.WeBackNode;
 
 import java.io.PrintStream;
@@ -14,7 +13,6 @@ public class SolutionIterator implements Iterator<Substitution> {
     public static final int UNLIMITED_ITERATIONS = -1;
     public static final PrintStream DEFAULT_PRINT_STREAM = System.out;
 
-    private final UsedUpNodes usedUpNodes;
     private final Tree tree;
     private final PrintStream printStream;
     private final int maxSearchDepth;
@@ -40,16 +38,15 @@ public class SolutionIterator implements Iterator<Substitution> {
         } else {
             this.maxSearchDepth = maxSearchDepth;
         }
-        this.usedUpNodes = UsedUpNodes.empty();
         this.expansionsSoFar = 0;
     }
 
     private boolean itsOver() {
-        return tree.itsOver(usedUpNodes);
+        return tree.itsOver();
     }
 
     private Optional<WeBackNode> weBack() {
-        return tree.weBack(usedUpNodes);
+        return tree.weBack();
     }
 
     private boolean couldExpand() {
@@ -101,7 +98,7 @@ public class SolutionIterator implements Iterator<Substitution> {
         if (weBack.isPresent()) {
             resetCache();
             WeBackNode weSoBack = weBack.get();
-            usedUpNodes.addUsedUpNode(weSoBack);
+            weSoBack.markUsedUp();
             return weSoBack.fullSolution();
         } else {
             throw new NoSuchElementException();

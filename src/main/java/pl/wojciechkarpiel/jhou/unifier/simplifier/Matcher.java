@@ -15,7 +15,6 @@ import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 public class Matcher {
@@ -65,8 +64,14 @@ public class Matcher {
     public static List<Substitution> matchS(BetaEtaNormal rigid, BetaEtaNormal flexible) {
         List<Term> matches = match(rigid, flexible);
         Variable v = HeadOps.asVariable(flexible.getHead()).get();
-        return matches.stream().map(m -> new Substitution(v, m)).collect(Collectors.toList());
+        List<Substitution> substitutions = new ArrayList<>(matches.size());
+        for (Term match : matches) {
+            Substitution sub = new Substitution(v, match);
+            substitutions.add(sub);
+        }
+        return substitutions;
     }
+
     /**
      * @return possible solutions
      */
@@ -89,7 +94,14 @@ public class Matcher {
     public static List<Term> projections(RigidFlexible rigidFlexible) {
         List<Term> res = new ArrayList<>(rigidFlexible.getP());
         for (int i = 0; i < rigidFlexible.getP(); i++) {
-            res.add(projForBinder(i, rigidFlexible));
+            Term e = projForBinder(i, rigidFlexible);
+            // yooo check if the type matches
+            Type pType = TypeCalculator.calculateType(e);
+            Type acType = ((Variable) rigidFlexible.flexible.getHead().getTerm()).getType();
+            //  it's not mentioned in paper, but it can (and likely) will) happen that the type of arg is different than contnt
+            if (pType.equals(acType)) {
+                res.add(e);
+            }
         }
 
         return res;
@@ -98,13 +110,13 @@ public class Matcher {
     private static Term projForBinder(int i, RigidFlexible rigidFlexible) {
         List<Variable> binders = getPBinders(rigidFlexible);
         Head.HeadVariable newHead = new Head.HeadVariable(binders.get(i));
+        BetaEtaNormal benHeadBinder = BetaEtaNormal.normalize(binders.get(i));
         Type headType = newHead.getV().getType();
         List<Term> args = new ArrayList<>(headType.arity());
         for (int j = 0; j < headType.arity(); j++) {
-            Type targetType = headType;
-            for (int q = 0; q < j + 1; q++) { //todo test this its yolo
-                targetType = ((ArrowType) targetType).getFrom();
-            }
+            // arg od benheadBinder, index J
+            Term l3l = benHeadBinder.getArguments().get(j);
+            Type targetType = TypeCalculator.calculateType(l3l);
 
             for (int k = binders.size() - 1; k >= 0; k--) {
                 targetType = new ArrowType(binders.get(k).getType(), targetType);
@@ -115,8 +127,9 @@ public class Matcher {
                     new ArrayList<>(),
                     new ArrayList<>(binders) // replacement binders are arg's argyments
             );
-            TypeCalculator.calculateType(arg.backToTerm()); //sanity check
-            args.add(arg.backToTerm());
+            Term term = arg.backToTerm();
+            TypeCalculator.calculateType(term); //sanity check
+            args.add(term);
         }
         Term term = BetaEtaNormal.fromFakeNormal(newHead, binders, args).backToTerm();
         TypeCalculator.calculateType(term);
@@ -147,8 +160,9 @@ public class Matcher {
                     new ArrayList<>(),
                     new ArrayList<>(binders) // replacement binders are arg's arguments
             );
-            TypeCalculator.calculateType(arg.backToTerm()); //sanity check
-            args.add(arg.backToTerm());
+            Term term = arg.backToTerm();
+            TypeCalculator.calculateType(term); //sanity check
+            args.add(term);
         }
 
         Term term = BetaEtaNormal.fromFakeNormal(newHead, binders, args).backToTerm();

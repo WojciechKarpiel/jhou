@@ -1,6 +1,7 @@
 package pl.wojciechkarpiel.jhou.termHead;
 
 import org.junit.jupiter.api.Test;
+import pl.wojciechkarpiel.jhou.Api;
 import pl.wojciechkarpiel.jhou.ast.Abstraction;
 import pl.wojciechkarpiel.jhou.ast.Constant;
 import pl.wojciechkarpiel.jhou.ast.Term;
@@ -16,15 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class HeaderUnifierTest {
 
 
-    private Term freshLamxx() {
-        Variable x = new Variable(Id.uniqueId(), new BaseType(Id.uniqueId()));
+    private Term freshLamxx(Type t) {
+        Variable x = new Variable(Id.uniqueId(), t);
         return new Abstraction(x, x);
     }
 
     @Test
     void lamxxunif() {
-        BetaEtaNormal a = BetaEtaNormalizer.normalize(freshLamxx());
-        BetaEtaNormal b = BetaEtaNormalizer.normalize(freshLamxx());
+        Type t = Api.freshType();
+        BetaEtaNormal a = BetaEtaNormalizer.normalize(freshLamxx(t));
+        BetaEtaNormal b = BetaEtaNormalizer.normalize(freshLamxx(t));
 
         assertNotEquals(a, b);
 
@@ -36,9 +38,10 @@ class HeaderUnifierTest {
 
     @Test
     void noGood() {
-        BetaEtaNormal a = BetaEtaNormalizer.normalize(freshLamxx());
-        Variable v = new Variable(Id.uniqueId(), new BaseType(Id.uniqueId()));
-        Constant c = new Constant(Id.uniqueId(), new BaseType(Id.uniqueId()));
+        Type t = Api.freshType("T");
+        BetaEtaNormal a = BetaEtaNormalizer.normalize(freshLamxx(t));
+        Variable v = new Variable(Id.uniqueId(), t);
+        Constant c = new Constant(Id.uniqueId(), t);
         BetaEtaNormal b = BetaEtaNormalizer.normalize(new Abstraction(v, c));
 
         assertNotEquals(a, b);

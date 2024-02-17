@@ -9,6 +9,7 @@ import pl.wojciechkarpiel.jhou.ast.util.Id;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
 import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
+import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
@@ -23,19 +24,84 @@ import static org.junit.jupiter.api.Assertions.*;
 import static pl.wojciechkarpiel.jhou.Api.*;
 
 class MatcherTest {
-    public static final int MAX_ITER_NONFINDABLE = 6;
+    public static final int MAX_ITER_NONFINDABLE = 5;
+
+    @Test
+    void multiP() {
+        Type t = freshType("t");
+        Type a = freshType("a");
+        Type b = freshType("b");
+        Type c = freshType("c");
+        Type d = freshType("d");
+        Type targetT = arrow(
+                arrow(a, arrow(b, c)),
+                arrow(
+                        arrow(b, arrow(c, d)),
+                        t));
+        Constant C = (Constant) freshConstant(targetT, "C");
+        Variable v = (Variable) freshVariable(targetT, "V");
+        Constant arg1 = (Constant) freshConstant(arrow(a, arrow(b, c)), "arg1");
+        Constant arg2 = (Constant) freshConstant(arrow(b, arrow(c, d)), "arg2");
+        Variable va1 = (Variable) freshVariable(arrow(a, arrow(b, c)), "va1");
+        Variable va2 = (Variable) freshVariable(arrow(b, arrow(c, d)), "va2");
+
+
+        Term left = app(app(C, arg1), arg2);
+        Term right = app(app(v, va1), va2);
+
+        TypeCalculator.ensureEqualTypes(left, right);
+
+        SolutionIterator si = Unifier.unify(left, right);
+        assertTrue(si.hasNext());
+        for (int i = 0; i < 16; i++) { // how many?
+            TestUtil.assertGoodSolution(si.next(), left, right);
+        }
+    }
+
+    @Test
+    void multiP2() {
+        Type t = freshType("t");
+        Type a = freshType("a");
+        Type b = freshType("b");
+        Type c = freshType("c");
+        Type d = freshType("d");
+        Type targetT = arrow(
+                arrow(a, arrow(b, c)),
+                arrow(
+                        arrow(b, arrow(c, d)),
+                        t));
+        Constant C = (Constant) freshConstant(targetT, "C");
+        Variable v = (Variable) freshVariable(arrow(d, targetT), "V");
+        Constant arg1 = (Constant) freshConstant(arrow(a, arrow(b, c)), "arg1");
+        Constant arg2 = (Constant) freshConstant(arrow(b, arrow(c, d)), "arg2");
+        Variable va1 = (Variable) freshVariable(arrow(a, arrow(b, c)), "va1");
+        Variable va2 = (Variable) freshVariable(arrow(b, arrow(c, d)), "va2");
+
+
+        Term left = app(app(C, arg1), arg2);
+        Term right = app(app(app(v, freshConstant(d, "DD")), va1), va2);
+
+        TypeCalculator.ensureEqualTypes(left, right);
+
+        SolutionIterator si = Unifier.unify(left, right);
+        assertTrue(si.hasNext());
+        for (int i = 0; i < 16; i++) { // how many?
+            TestUtil.assertGoodSolution(si.next(), left, right);
+        }
+    }
 
     @Test
     void l3l() {
-        BaseType c2t = new BaseType(Id.uniqueId());
+        BaseType c2t = new BaseType(Id.uniqueId(), "T2");
         Constant c2 = new Constant(Id.uniqueId(), c2t);
-        BaseType c1t = new BaseType(Id.uniqueId());
+        BaseType c1t = new BaseType(Id.uniqueId(), "T1");
         Constant c1 = new Constant(Id.uniqueId(), c1t);
-        Variable v1 = new Variable(Id.uniqueId(), new BaseType(Id.uniqueId()));
-        Variable v2 = new Variable(Id.uniqueId(), new BaseType(Id.uniqueId()));
-        Variable v = new Variable(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, new BaseType(Id.uniqueId()))));
+        Variable v1 = new Variable(Id.uniqueId(), c1t);
+        Variable v2 = new Variable(Id.uniqueId(), c2t);
+        BaseType fint = new BaseType(Id.uniqueId(), "TFIN");
+        Variable v = new Variable(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, c2t)));
         Term flexible = new Abstraction(v1, new Abstraction(v2, new Application(new Application(v, c1), c2)));
-        Constant c = new Constant(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, new BaseType(Id.uniqueId()))));
+        Constant c = new Constant(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, c2t)));
         Term rigid = new Abstraction(v1, new Abstraction(v2, new Application(new Application(c, c1), c2)));
 
         BetaEtaNormal flexBen = BetaEtaNormal.normalize(flexible);
@@ -45,7 +111,7 @@ class MatcherTest {
         assertThrows(IllegalArgumentException.class, () -> Matcher.match(new Matcher.RigidFlexible(flexBen, flexBen)));
         assertThrows(IllegalArgumentException.class, () -> Matcher.match(new Matcher.RigidFlexible(rigidBen, rigidBen)));
         List<Term> matched = Matcher.match(new Matcher.RigidFlexible(rigidBen, flexBen));
-        assertEquals(3, matched.size());
+        assertEquals(2, matched.size()); // one rejected because of mismatch
         {
             BetaEtaNormal impersonation = BetaEtaNormal.normalize(matched.get(0));
             Optional<Constant> co = HeadOps.asConstant(impersonation.getHead());

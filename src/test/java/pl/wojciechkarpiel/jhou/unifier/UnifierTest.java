@@ -130,7 +130,6 @@ class UnifierTest {
         Term l3l = app(app(y, c), abstraction(t, x -> x));
 
         SolutionIterator s = Unifier.unify(l3l, c);
-        // TODO check, not only comment solutions :P
 
         TestUtil.assertGoodSolution(s.next(), l3l, c);
         TestUtil.assertGoodSolution(s.next(), l3l, c);

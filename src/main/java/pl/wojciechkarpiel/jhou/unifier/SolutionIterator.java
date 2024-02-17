@@ -50,7 +50,7 @@ public class SolutionIterator implements Iterator<Substitution> {
     }
 
     private boolean couldExpand() {
-        if (expansionsSoFar >= maxSearchDepth) {
+        if (searchLimitReached()) {
             printStream.println("Max search depth reached, aborting");
             return false;
         }
@@ -58,7 +58,7 @@ public class SolutionIterator implements Iterator<Substitution> {
     }
 
     private void doExpand() {
-        if (expansionsSoFar >= maxSearchDepth) {
+        if (searchLimitReached()) {
             throw new MaxSearchDepthExceededException();
         }
         expansionsSoFar++;
@@ -103,5 +103,12 @@ public class SolutionIterator implements Iterator<Substitution> {
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    /**
+     * @return true if further search is not performed because of reaching the max search depth
+     */
+    public boolean searchLimitReached() {
+        return expansionsSoFar >= maxSearchDepth;
     }
 }

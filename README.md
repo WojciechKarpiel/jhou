@@ -18,6 +18,9 @@ Add following dependency to your project
 </dependency>
 ```
 
+For other build tools (SBT, Gradle, Leiningen) see the configuration snippets
+[here](https://central.sonatype.com/artifact/pl.wojciechkarpiel/jhou)
+
 ## Usage
 
 See the

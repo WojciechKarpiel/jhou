@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7
+
+* Change publishing site to Maven Central
+
 ## 0.6
 
 * Bugfix: Matching procedure provided projections which mismatched the type of the flexible variable

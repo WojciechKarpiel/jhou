@@ -11,26 +11,12 @@ The implementation based on
 Add following dependency to your project
 
 ```xml
-<project>
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
-  <dependencies>
-    <dependency>
-      <groupId>com.github.WojciechKarpiel</groupId>
-      <artifactId>jhou</artifactId>
-      <version>v0.6</version>
-    </dependency>
-  </dependencies>
-</project>
+<dependency>
+  <groupId>pl.wojciechkarpiel</groupId>
+  <artifactId>jhou</artifactId>
+  <version>0.7</version>
+</dependency>
 ```
-
-If you're using other build tool (Gradle, SBT, Leiningen),
-[here](https://jitpack.io/#WojciechKarpiel/jhou)
-are the configuration snippets. `v0.6` is the newest release.
 
 ## Usage
 

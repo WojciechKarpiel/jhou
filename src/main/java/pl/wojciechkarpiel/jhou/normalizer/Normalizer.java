@@ -2,7 +2,6 @@ package pl.wojciechkarpiel.jhou.normalizer;
 
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
-import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
@@ -13,19 +12,11 @@ import java.util.HashMap;
 public class Normalizer {
 
     public static Term betaNormalize(Term term) {
-        // sanity check to move somewhere else
-        TypeCalculator.calculateType(term);
         return new Normalizer().betaNormalizeInternal(term);
     }
 
     public static Term etaContract(Term term) {
-        Type pre = TypeCalculator.calculateType(term);
-        Term normalized = etaCompressInternal(term);
-        Type post = TypeCalculator.calculateType(normalized);
-        if (!pre.equals(post)) { //sanity check
-            throw new RuntimeException();
-        }
-        return normalized;
+        return etaCompressInternal(term);
     }
 
     public static Term betaEtaNormalForm(Term term) {

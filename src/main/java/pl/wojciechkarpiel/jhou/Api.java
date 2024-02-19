@@ -7,9 +7,9 @@ import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
+import pl.wojciechkarpiel.jhou.unifier.UnificationSettings;
 import pl.wojciechkarpiel.jhou.unifier.Unifier;
 
-import java.io.PrintStream;
 import java.util.function.Function;
 
 /**
@@ -47,6 +47,10 @@ public class Api {
         return Variable.freshVariable(type);
     }
 
+    public static Variable freshVariableInferType() {
+        return Variable.freshVariable(null);
+    }
+
     /**
      * Name is only for pretty-printing, two fresh variables of the same name are distinct.
      * If you don't need pretty-printnig, use freshVariable(Type) variant
@@ -58,8 +62,16 @@ public class Api {
         return Variable.freshVariable(type, name);
     }
 
+    public static Variable freshVariableInferType(String name) {
+        return Variable.freshVariable(null, name);
+    }
+
     public static Term freshConstant(Type type) {
         return Constant.freshConstant(type);
+    }
+
+    public static Term freshConstantInferType() {
+        return Constant.freshConstant(null);
     }
 
     /**
@@ -71,6 +83,10 @@ public class Api {
      */
     public static Term freshConstant(Type type, String name) {
         return Constant.freshConstant(type, name);
+    }
+
+    public static Term freshConstantInferType(String name) {
+        return Constant.freshConstant(null, name);
     }
 
     public static Type arrow(Type from, Type to) {
@@ -89,8 +105,16 @@ public class Api {
         return Abstraction.fromLambda(variableType, abstraction);
     }
 
+    public static Term abstractionInferType(Function<Variable, Term> abstraction) {
+        return Abstraction.fromLambda(null, abstraction);
+    }
+
     public static Term abstraction(Type variableType, String variableName, Function<Variable, Term> abstraction) {
         return Abstraction.fromLambda(variableType, abstraction, variableName);
+    }
+
+    public static Term abstractionInferType(String variableName, Function<Variable, Term> abstraction) {
+        return Abstraction.fromLambda(null, abstraction, variableName);
     }
 
     public static Term betaNormalize(Term term) {
@@ -135,15 +159,7 @@ public class Api {
         return Unifier.unify(a, b);
     }
 
-    public static SolutionIterator unify(Term a, Term b, int maxIterations) {
-        return Unifier.unify(a, b, maxIterations);
-    }
-
-    public static SolutionIterator unify(Term a, Term b, PrintStream printStream) {
-        return Unifier.unify(a, b, printStream);
-    }
-
-    public static SolutionIterator unify(Term a, Term b, int maxIterations, PrintStream printStream) {
-        return Unifier.unify(a, b, maxIterations, printStream);
+    public static SolutionIterator unify(Term a, Term b, UnificationSettings unificationSettings) {
+        return Unifier.unify(a, b, unificationSettings);
     }
 }

@@ -10,10 +10,7 @@ import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
 import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
-import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
-import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
-import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
-import pl.wojciechkarpiel.jhou.unifier.Unifier;
+import pl.wojciechkarpiel.jhou.unifier.*;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationResult;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
 
@@ -174,8 +171,9 @@ class MatcherTest {
             assertEquals(b1.getBinder().get(1), b1.getHead().getTerm());
         }
 
-
-        SolutionIterator s = Unifier.unify(left, right, MAX_ITER_NONFINDABLE);
+        UnificationSettings us = new UnificationSettings();
+        us.setMaxIterations(MAX_ITER_NONFINDABLE);
+        SolutionIterator s = Unifier.unify(left, right, us);
         assertFalse(s.hasNext());
     }
 
@@ -236,7 +234,9 @@ class MatcherTest {
         }
 
 
-        SolutionIterator s = Unifier.unify(left, right, MAX_ITER_NONFINDABLE);
+        UnificationSettings us = new UnificationSettings();
+        us.setMaxIterations(MAX_ITER_NONFINDABLE);
+        SolutionIterator s = Unifier.unify(left, right, us);
         assertFalse(s.hasNext());
     }
 
@@ -265,7 +265,10 @@ class MatcherTest {
                                         ),
                                         x2)));
 
-        SolutionIterator s = Unifier.unify(left, right, 8);
+
+        UnificationSettings us = new UnificationSettings();
+        us.setMaxIterations(8);
+        SolutionIterator s = Unifier.unify(left, right, us);
         TestUtil.assertGoodSolution(s.next(), left, right);
         TestUtil.assertGoodSolution(s.next(), left, right);
         TestUtil.assertGoodSolution(s.next(), left, right);

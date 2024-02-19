@@ -4,6 +4,7 @@ import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
+import pl.wojciechkarpiel.jhou.unifier.PairType;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.Matcher;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.Simplifier;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.*;
@@ -72,7 +73,6 @@ public class WorkWorkNode implements Tree {
 
                 @Override
                 public List<Tree> visitNode(SimplificationNode node) {
-
                     return createChildNodes(node.getDisagreement());
                 }
 
@@ -81,7 +81,6 @@ public class WorkWorkNode implements Tree {
                     return ListUtil.of(new NagmiNode(thiz));
                 }
             });
-
         }
     }
 
@@ -91,10 +90,16 @@ public class WorkWorkNode implements Tree {
     }
 
     private List<Tree> createChildNodes(DisagreementSet disagreement) {
+        return createChildNodes(disagreement, this);
+    }
+
+    public static List<Tree> createChildNodes(DisagreementSet disagreement, Tree parent) {
         List<Tree> result = new ArrayList<>();
-        Stream<List<Substitution>> stream = disagreement.getDisagreements().stream().map(disagreementPair ->
-                Matcher.matchS(disagreementPair.getMostRigid(), disagreementPair.getLeastRigid())
-        );
+        Stream<List<Substitution>> stream = disagreement.getDisagreements().stream()
+                .filter(dp -> dp.getType() == PairType.RIGID_FLEXIBLE)
+                .map(disagreementPair ->
+                        Matcher.matchS(disagreementPair.getMostRigid(), disagreementPair.getLeastRigid())
+                );
         List<Substitution> flatSubs = new ArrayList<>();
         stream.forEach(flatSubs::addAll);
         for (Substitution possibleSolution : flatSubs) {
@@ -104,7 +109,7 @@ public class WorkWorkNode implements Tree {
                             Normalizer.betaNormalize(possibleSolution.substitute(disagreementPair.getLeastRigid().backToTerm()))
                     )).collect(Collectors.toList()));
 
-            Tree tree = new WorkWorkNode(this, possibleSolution, newDs);
+            Tree tree = new WorkWorkNode(parent, possibleSolution, newDs);
             result.add(tree);
         }
 

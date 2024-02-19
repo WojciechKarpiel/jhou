@@ -25,8 +25,10 @@ public class Matcher {
         public RigidFlexible(BetaEtaNormal rigid, BetaEtaNormal flexible) {
             this.rigid = rigid;
             this.flexible = flexible;
-            if (!rigid.isRigid()) throw new IllegalArgumentException();
-            if (flexible.isRigid()) throw new IllegalArgumentException();
+            if (!rigid.isRigid())
+                throw new IllegalArgumentException();
+            if (flexible.isRigid())
+                throw new IllegalArgumentException();
         }
 
         public BetaEtaNormal getFlexible() {

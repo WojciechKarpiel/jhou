@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8
+
+* Partial type inference for input formulas
+
 ## 0.7
 
 * Change publishing site to Maven Central

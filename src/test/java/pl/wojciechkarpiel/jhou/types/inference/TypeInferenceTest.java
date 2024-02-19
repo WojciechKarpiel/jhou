@@ -138,4 +138,29 @@ class TypeInferenceTest {
     }
 
 
+    @Test
+    void apiUsageExampleSLOWIFNOTFIRSTORDERHACK() {
+        // GIVEN
+        Type type = freshType(); // we work with typed lambda calculus, so we need some type
+        Term c = freshConstant(arrow(type, type), "C");
+        Variable y = freshVariable(arrow(type, type), "y");
+        Term left = abstractionInferType("xl", x -> app(y, app(c, app(y, x))));
+        Term right = abstractionInferType("xr", x -> app(c, x));
+
+
+        // WHEN
+        // result is an iterator over possible substitutions that unify the two sider
+        SolutionIterator result = unify(left, right);
+
+        // THEN
+        assertTrue(result.hasNext());
+        Substitution solution = result.next();
+        assertFalse(result.hasNext()); // only one solution in this case
+
+        // check if shape of substitution is the one we expect
+        Substitution expectedSolution = new Substitution(y, abstraction(type, x -> x));
+        assertEquals(expectedSolution, solution);
+
+    }
+
 }

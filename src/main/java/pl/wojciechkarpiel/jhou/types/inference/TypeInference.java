@@ -78,10 +78,12 @@ public class TypeInference {
 
         DisagreementSet disagreementSet = new DisagreementSet(ds);
 
+        boolean previousValueToRestore = WorkWorkNode.PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION;
+        WorkWorkNode.PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION = true;
         Tree tree = new WorkWorkNode(null, Substitution.empty(), disagreementSet);
         SolutionIterator s = new SolutionIterator(tree, DevNullPrintStream.INSTANCE);
         Substitution nxt = s.next();
-
+        WorkWorkNode.PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION = previousValueToRestore;
         return termsOfEqualType.stream().map(term -> l3l.recreateWithTypes(term, nxt)).collect(Collectors.toList());
     }
 

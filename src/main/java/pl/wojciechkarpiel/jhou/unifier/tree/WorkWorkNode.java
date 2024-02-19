@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class WorkWorkNode implements Tree {
 
@@ -95,13 +94,18 @@ public class WorkWorkNode implements Tree {
 
     public static List<Tree> createChildNodes(DisagreementSet disagreement, Tree parent) {
         List<Tree> result = new ArrayList<>();
-        Stream<List<Substitution>> stream = disagreement.getDisagreements().stream()
+        List<List<Substitution>> stream = disagreement.getDisagreements().stream()
                 .filter(dp -> dp.getType() == PairType.RIGID_FLEXIBLE)
                 .map(disagreementPair ->
                         Matcher.matchS(disagreementPair.getMostRigid(), disagreementPair.getLeastRigid())
-                );
+                ).collect(Collectors.toList());
         List<Substitution> flatSubs = new ArrayList<>();
         stream.forEach(flatSubs::addAll);
+        if (PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION) { // hack to seed up first order search
+            // this works because in 1st order search any found substitution must be a good one,
+            // so we don't need to create multiple tree branches (effectively turning exponential into linear)
+            if (!flatSubs.isEmpty()) flatSubs = ListUtil.of(flatSubs.get(0));
+        }
         for (Substitution possibleSolution : flatSubs) {
             DisagreementSet newDs = new DisagreementSet(disagreement.getDisagreements().stream().map(disagreementPair ->
                     new DisagreementPair(
@@ -115,4 +119,6 @@ public class WorkWorkNode implements Tree {
 
         return result;
     }
+
+    public static boolean PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION = false;
 }

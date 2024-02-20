@@ -13,7 +13,7 @@ import pl.wojciechkarpiel.jhou.unifier.Unifier;
 import java.util.function.Function;
 
 /**
- * Public API methods. The intended usage is:
+ * Public API methods. See <a href="https://github.com/WojciechKarpiel/jhou">README</a> for reference. The intended usage is:
  * <pre>
  *     import static pl.wojciechkarpiel.jhou.api.Api.*;
  * </pre>
@@ -47,7 +47,10 @@ public class Api {
         return Variable.freshVariable(type);
     }
 
-    public static Variable freshVariableInferType() {
+    /**
+     * Type will be automatically inferred during unification
+     */
+    public static Variable freshVariable() {
         return Variable.freshVariable(null);
     }
 
@@ -62,7 +65,10 @@ public class Api {
         return Variable.freshVariable(type, name);
     }
 
-    public static Variable freshVariableInferType(String name) {
+    /**
+     * Type will be automatically inferred during unification
+     */
+    public static Variable freshVariable(String name) {
         return Variable.freshVariable(null, name);
     }
 
@@ -70,7 +76,10 @@ public class Api {
         return Constant.freshConstant(type);
     }
 
-    public static Term freshConstantInferType() {
+    /**
+     * Type will be automatically inferred during unification
+     */
+    public static Term freshConstant() {
         return Constant.freshConstant(null);
     }
 
@@ -85,7 +94,10 @@ public class Api {
         return Constant.freshConstant(type, name);
     }
 
-    public static Term freshConstantInferType(String name) {
+    /**
+     * Type will be automatically inferred during unification
+     */
+    public static Term freshConstant(String name) {
         return Constant.freshConstant(null, name);
     }
 
@@ -93,19 +105,26 @@ public class Api {
         return new ArrowType(from, to);
     }
 
-    public static Term application(Term function, Term argument) {
-        return new Application(function, argument);
+    public static Type typeOfCurriedFunction(Type arg1, Type arg2, Type... argN) {
+        return ArrowType.typeOfCurriedFunction(arg1, arg2, argN);
     }
 
-    public static Term app(Term function, Term argument) {
-        return application(function, argument);
+    public static Term application(Term function, Term argument, Term... moreArguments) {
+        return Application.apply(function, argument, moreArguments);
+    }
+
+    public static Term app(Term function, Term argument, Term... moreArguments) {
+        return application(function, argument, moreArguments);
     }
 
     public static Term abstraction(Type variableType, Function<Variable, Term> abstraction) {
         return Abstraction.fromLambda(variableType, abstraction);
     }
 
-    public static Term abstractionInferType(Function<Variable, Term> abstraction) {
+    /**
+     * Type will be automatically inferred during unification
+     */
+    public static Term abstraction(Function<Variable, Term> abstraction) {
         return Abstraction.fromLambda(null, abstraction);
     }
 
@@ -113,7 +132,10 @@ public class Api {
         return Abstraction.fromLambda(variableType, abstraction, variableName);
     }
 
-    public static Term abstractionInferType(String variableName, Function<Variable, Term> abstraction) {
+    /**
+     * Type will be automatically inferred during unification
+     */
+    public static Term abstraction(String variableName, Function<Variable, Term> abstraction) {
         return Abstraction.fromLambda(null, abstraction, variableName);
     }
 

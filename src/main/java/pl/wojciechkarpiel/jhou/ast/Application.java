@@ -14,6 +14,14 @@ public class Application implements Term {
         this.argument = argument;
     }
 
+    public static Application apply(Term function, Term argument, Term... moreArguments) {
+        Application result = new Application(function, argument);
+        for (Term additionalArgument : moreArguments) {
+            result = new Application(result, additionalArgument);
+        }
+        return result;
+    }
+
     public Term getArgument() {
         return argument;
     }

@@ -1,6 +1,6 @@
 package pl.wojciechkarpiel.jhou.ast.type;
 
-import java.util.Objects;
+import java.util.*;
 
 public class ArrowType implements Type {
 
@@ -10,6 +10,19 @@ public class ArrowType implements Type {
     public ArrowType(Type from, Type to) {
         this.from = from;
         this.to = to;
+    }
+
+    public static ArrowType typeOfCurriedFunction(Type arg1, Type arg2, Type... argN) {
+        List<Type> args = new ArrayList<>(argN.length + 2);
+        args.add(arg1);
+        args.add(arg2);
+        args.addAll(Arrays.asList(argN));
+        Collections.reverse(args);
+        Type result = args.get(0);
+        for (int i = 1; i < args.size(); i++) {
+            result = new ArrowType(args.get(i), result);
+        }
+        return (ArrowType) result;
     }
 
     public Type getFrom() {

@@ -49,8 +49,8 @@ public class Main {
     Type type = freshType(); // we work with typed lambda calculus, so we need some type
     Term c = freshConstant(arrow(type, type), "C");
     Variable y = freshVariable(arrow(type, type), "y");
-    Term left = abstraction(type, x -> app(y, app(c, app(y, x))));
-    Term right = abstraction(type, x -> app(c, x));
+    Term left = abstraction(x -> app(y, app(c, app(y, x))));
+    Term right = abstraction(x -> app(c, x));
     // result is an iterator over possible substitutions that unify the two sides
     SolutionIterator result = unify(left, right);
     Substitution solution = result.next();
@@ -75,6 +75,8 @@ doesn't care about types, then create a single base type and arrow types based o
 * `Type freshType(String name)` - create a new base type and assign it a name.
   The name is only for pretty-printing, two fresh types of the same name are distinct.
 * `Type arrow(Type from, Type to)` - create an arrow type (i.e. a function type).
+* `Type typeOfCurriedFunction(Type arg1, Type arg2, Type... argN)` - helper for nested
+  arrow types, equivalent to `arrow(arg1, arrow(arg2, arrow(arg3, ...)))`
 
 Example:
 
@@ -91,15 +93,24 @@ TODO: describe more
 
 * `Variable freshVariable(Type type)` - create a new free variable of type `type`. A `Variable` is a subtype of `Term`
   Substitution for such variables will be searched for by the unification procedure
+* `Variable freshVariable()` - like above, but with type automatically inferred during unification
 * `Variable freshVariable(Type type, String name)` - Name is only for pretty-printing, two fresh variables of the same
   name are distinct.
+* `Variable freshVariable(String name)` - like above, but with type automatically inferred during unification
 * `Term freshConstant(Type type)`
-* `Term freshConstant(Type type)` - Name is only for pretty-printing, two fresh constants of the same name are distinct.
+* `Term freshConstant()` - like above, but with type automatically inferred during unification
+* `Term freshConstant(Type type, String name)` - Name is only for pretty-printing, two fresh constants of the same name
+  are distinct.
+* `Term freshConstant(String name)` - like above, but with type automatically inferred during unification
 * `Term application(Term function, Term argument)`
 * `Term app(Term function, Term argument)` - same as `application`
 * `Term abstraction(Type variableType, Function<Variable, Term> abstraction)`
+* `Term abstraction(Function<Variable, Term> abstraction)`  - like above, but with type automatically inferred during
+  unification
 * `Term abstraction(Type variableType, String variableName, Function<Variable, Term> abstraction)` - Name is only for
   pretty-printing
+* `Term abstraction(String variableName, Function<Variable, Term> abstraction)` - like above, but with type
+  automatically inferred during unification
 
 ### Normalization and utility
 
@@ -118,23 +129,54 @@ TODO: describe more
 Note: unification for higher-order logics is undecidable, hence the algorithm with
 no time bound might run forever without producing any result.
 
-* `SolutionIterator unify(Term a, Term b)` - try to unify terms `a` and `b` with unlimited time.
-* `SolutionIterator unify(Term a, Term b, int maxIterations)` - try to unify terms `a` and `b`
-  with a computation bound. The bound is closely defined as the max height of the search tree.
+* `SolutionIterator unify(Term a, Term b)` - try to unify terms `a` and `b` with default UnificationSettings.
+* `SolutionIterator unify(Term a, Term b, UnificationSettings unificationSettings)` - see UnificationSettings
+  description
+
+#### UnificationSettings
+
+`UnificationSettings` is an aggregation of 3 settings:
+
+* `int maxIterations` (default: unlimited) - Add a computation bound on the unification.
+  The bound is loosely defined as the max height of the search tree.
   For example,
   [unifying `λx.y (C (y x))` and `λx.C x`](src/test/java/pl/wojciechkarpiel/jhou/api/ApiTest.java)
   needs a bound of 2 to find a solution, and bound of 3 to exhaust the search space.
-* `SolutionIterator unify(Term a, Term b, PrintStream printStream)` - try to unify terms `a` and `b`
-  with unlimited time. Additionally, you can use a different `PrintStream` instead of `System.out` -
+* `PrintStream printStream` (default: `System.out`) - use a different `PrintStream` instead of `System.out` -
   this can be used to suppress logging.
-* `SolutionIterator unify(Term a, Term b, int maxIterations, PrintStream printStream)`
+* `AllowedTypeInference allowedTypeInference` (default: `PERMISSIVE`) - controls what happens in case type inference is
+  needed:
+  * `NO_INFERENCE_ALLOWED` - throw an exception in case types aren't fully specified in advance
+  * `NO_ARBITRARY_SOLUTIONS` - allow type inference only if it generates a unique solution, otherwise throw
+    an exception. For example, the type of `λx.x` is `t → t` for an *arbitrary* `t`, hence it would not be allowed
+  * `PERMISSIVE` - allow type inference, and in case the solution is non-unique, arbitrarily fill in the missing types.
+    For example, inferred type for `λx.x` is `t → t`, for an arbitrary type `t`.
 
-TODO: describe `SolutionIterator`
+#### SolutionIterator
+
+`SolutionIterator` returned by the `unify()` methods is an iterator over `Substitution`.
+It's methods are:
+
+* `boolean hasNext()` - inherited from `Iterator`
+* `Substitution next()` - inherited from `Iterator`
+* `boolean searchLimitReached()` - when `hasNext()` returns `false`, one can check
+  if no more solutions are found because of search limit reached (see `UnificationSettings`),
+  or if there are truly no more solutions.
+
+#### Substitution
+
+`Substitution` is a solution for the unification problem. It's methods are:
+
+* `Term substitute(Term)` - return a term with free variables substituted.
+  If used on a free variable, then returns the substitution for that variable.
+  Leaves unknown free variables unchanged.
+
+#### Example
 
 ```
 Variable variable = freshVariable(type)
 SolutionIterator solutionIterator = unify(leftSide(variable), rightSide(variable));
-if (solutionIterator.hasNext()){
+if (solutionIterator.hasNext()) {
   Substitution s = solutionIterator.next();
   Term result = s.substitute(variable);
 }
@@ -161,9 +203,7 @@ The implementation goal is to make the library widely usable:
 
 ## TODO
 
-* basic type inference for term construction
 * describe how to use
+* provide usage examples
 * refactor
-* publish
-* spend the rest of the PTO doing something else than coding
 * stop disappointing my parents and find a gf

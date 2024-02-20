@@ -46,7 +46,10 @@ public class TypeInference {
     }
 
     public static List<Term> inferMissing(List<Term> termsOfEqualType, AllowedTypeInference allowedTypeInference, PrintStream printStream) {
+        return inferMissingInternal(termsOfEqualType, allowedTypeInference, printStream);
+    }
 
+    private static List<Term> inferMissingInternal(List<Term> termsOfEqualType, AllowedTypeInference allowedTypeInference, PrintStream printStream) {
         if (termsOfEqualType.stream().noneMatch(TypeInference::needsInference)) {
             printStream.println("No need for type inference, types fully instantiated");
             return termsOfEqualType;
@@ -62,7 +65,6 @@ public class TypeInference {
             l3l.annotate(term);
         }
         List<DisagreementPair> ds = l3l.collectDps();
-        // + toplevel reuirements:
         for (int i = 0; i < termsOfEqualType.size() - 1; i++) {
             Term prev = termsOfEqualType.get(i);
             Term next = termsOfEqualType.get(i + 1);
@@ -78,12 +80,9 @@ public class TypeInference {
 
         DisagreementSet disagreementSet = new DisagreementSet(ds);
 
-        boolean previousValueToRestore = WorkWorkNode.PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION;
-        WorkWorkNode.PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION = true;
-        Tree tree = new WorkWorkNode(null, Substitution.empty(), disagreementSet);
+        Tree tree = new WorkWorkNode(null, Substitution.empty(), disagreementSet, true);
         SolutionIterator s = new SolutionIterator(tree, DevNullPrintStream.INSTANCE);
         Substitution nxt = s.next();
-        WorkWorkNode.PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION = previousValueToRestore;
         return termsOfEqualType.stream().map(term -> l3l.recreateWithTypes(term, nxt)).collect(Collectors.toList());
     }
 
@@ -114,6 +113,7 @@ public class TypeInference {
 
 
     private final PrintStream printStream;
+    private final AllowedTypeInference allowedInference;
 
     private TypeInference(PrintStream printStream, AllowedTypeInference allowedTypeInference) {
         this.printStream = printStream;
@@ -178,8 +178,6 @@ public class TypeInference {
     public static class InferenceHasArbitrarySolutionsException extends RuntimeException {
     }
 
-    AllowedTypeInference allowedInference = AllowedTypeInference.PERMISSIVE;
-
     private Type fakeVarToRealType(Term t) {
         return t.visit(new Visitor<Type>() {
             @Override
@@ -191,7 +189,6 @@ public class TypeInference {
                         throw new InferenceHasArbitrarySolutionsException();
 
                     }
-                    // TODO throw un the future
                     Id id = Id.uniqueId();
                     BaseType value = new BaseType(id, "infered_arbitrarty_" + id.getId());
                     printStream.println("Creating a new, arbitrary type: " + value);
@@ -298,7 +295,7 @@ public class TypeInference {
             public Term visitArrowType(ArrowType arrowType) {
                 Term fr = ftchType(arrowType.getFrom());
                 Term to = ftchType(arrowType.getTo());
-                return new Application(new Application(ARROW, fr), to);
+                return Application.apply(ARROW, fr, to);
             }
         });
     }

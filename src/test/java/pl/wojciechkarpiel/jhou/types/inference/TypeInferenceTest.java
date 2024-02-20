@@ -29,19 +29,16 @@ class TypeInferenceTest {
 
 
         {
-            UnificationSettings us = new UnificationSettings();
-            us.setAllowedTypeInference(AllowedTypeInference.NO_INFERENCE_ALLOWED);
+            UnificationSettings us = new UnificationSettings(AllowedTypeInference.NO_INFERENCE_ALLOWED);
             assertThrows(TypeInference.InferenceRequiredButNotAllowedException.class, () -> Unifier.unify(d, d, us));
         }
         {
-            UnificationSettings us = new UnificationSettings();
-            us.setAllowedTypeInference(AllowedTypeInference.NO_ARBITRARY_SOLUTIONS);
+            UnificationSettings us = new UnificationSettings(AllowedTypeInference.NO_ARBITRARY_SOLUTIONS);
             assertThrows(TypeInference.InferenceHasArbitrarySolutionsException.class, () -> Unifier.unify(d, d, us));
 
         }
         {
-            UnificationSettings us = new UnificationSettings();
-            us.setAllowedTypeInference(AllowedTypeInference.PERMISSIVE);
+            UnificationSettings us = new UnificationSettings(AllowedTypeInference.PERMISSIVE);
             SolutionIterator s = Unifier.unify(d, d, us);
             assertEquals(0, s.next().getSubstitution().size());
         }
@@ -67,10 +64,10 @@ class TypeInferenceTest {
     @Test
     void apiUsageExample() {
         // GIVEN
-        Term c = freshConstantInferType("C");
-        Variable y = freshVariableInferType("y");
-        Term left_ = abstractionInferType(x -> app(y, app(c, app(y, x))));
-        Term right_ = abstractionInferType(x -> app(c, x));
+        Term c = freshConstant("C");
+        Variable y = freshVariable("y");
+        Term left_ = abstraction(x -> app(y, app(c, app(y, x))));
+        Term right_ = abstraction(x -> app(c, x));
 
         List<Term> tt = TypeInference.inferMissing(ListUtil.of(left_, right_));
 
@@ -104,10 +101,10 @@ class TypeInferenceTest {
     @Test
     void apiUsageExamplec() {
         // GIVEN
-        Term c = freshConstant(null, "C");
-        Variable y = freshVariable(null, "y");
-        Term left_ = abstraction(null, x -> app(y, app(c, app(y, x))));
-        Term right_ = abstraction(null, x -> app(c, x));
+        Term c = freshConstant("C");
+        Variable y = freshVariable("y");
+        Term left_ = abstraction(x -> app(y, app(c, app(y, x))));
+        Term right_ = abstraction(x -> app(c, x));
 
         List<Term> tt = TypeInference.inferMissing(ListUtil.of(left_, right_));
 
@@ -144,8 +141,8 @@ class TypeInferenceTest {
         Type type = freshType(); // we work with typed lambda calculus, so we need some type
         Term c = freshConstant(arrow(type, type), "C");
         Variable y = freshVariable(arrow(type, type), "y");
-        Term left = abstractionInferType("xl", x -> app(y, app(c, app(y, x))));
-        Term right = abstractionInferType("xr", x -> app(c, x));
+        Term left = abstraction("xl", x -> app(y, app(c, app(y, x))));
+        Term right = abstraction("xr", x -> app(c, x));
 
 
         // WHEN

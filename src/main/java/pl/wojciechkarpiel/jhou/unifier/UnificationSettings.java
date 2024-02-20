@@ -8,27 +8,39 @@ public class UnificationSettings {
     private PrintStream printStream = SolutionIterator.DEFAULT_PRINT_STREAM;
     private AllowedTypeInference allowedTypeInference = AllowedTypeInference.PERMISSIVE;
 
-    public int getMaxIterations() {
-        return maxIterations;
+    /**
+     * the default settings
+     */
+    public UnificationSettings() {
     }
 
-    public void setMaxIterations(int maxIterations) {
+    public UnificationSettings(AllowedTypeInference allowedTypeInference) {
+        this.allowedTypeInference = allowedTypeInference;
+    }
+
+    public UnificationSettings(int maxIterations) {
         this.maxIterations = maxIterations;
+    }
+
+    public UnificationSettings(AllowedTypeInference allowedTypeInference, int maxIterations) {
+        this.allowedTypeInference = allowedTypeInference;
+        this.maxIterations = maxIterations;
+    }
+
+    public UnificationSettings(AllowedTypeInference allowedTypeInference, int maxIterations, PrintStream printStream) {
+        this.allowedTypeInference = allowedTypeInference;
+        this.maxIterations = maxIterations;
+        this.printStream = printStream;
+    }
+
+    public int getMaxIterations() {
+        return maxIterations;
     }
 
     public PrintStream getPrintStream() {
         return printStream;
     }
-
-    public void setPrintStream(PrintStream printStream) {
-        this.printStream = printStream;
-    }
-
     public AllowedTypeInference getAllowedTypeInference() {
         return allowedTypeInference;
-    }
-
-    public void setAllowedTypeInference(AllowedTypeInference allowedTypeInference) {
-        this.allowedTypeInference = allowedTypeInference;
     }
 }

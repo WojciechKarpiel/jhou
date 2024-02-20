@@ -19,14 +19,20 @@ public class WorkWorkNode implements Tree {
 
     private final Substitution fromParent;
     private final DisagreementSet disagreementSet;
+    private final boolean pretendYoureDoingFirstOrder;
 
     private List<Tree> children;
     private final Tree parent;
 
     public WorkWorkNode(Tree parent, Substitution fromParent, DisagreementSet disagreementSet) {
+        this(parent, fromParent, disagreementSet, false);
+    }
+
+    public WorkWorkNode(Tree parent, Substitution fromParent, DisagreementSet disagreementSet, boolean pretendYoureDoingFirstOrder) {
         this.parent = parent;
         this.fromParent = fromParent;
         this.disagreementSet = disagreementSet;
+        this.pretendYoureDoingFirstOrder = pretendYoureDoingFirstOrder;
     }
 
     public Tree getParent() {
@@ -89,10 +95,6 @@ public class WorkWorkNode implements Tree {
     }
 
     private List<Tree> createChildNodes(DisagreementSet disagreement) {
-        return createChildNodes(disagreement, this);
-    }
-
-    public static List<Tree> createChildNodes(DisagreementSet disagreement, Tree parent) {
         List<Tree> result = new ArrayList<>();
         List<List<Substitution>> stream = disagreement.getDisagreements().stream()
                 .filter(dp -> dp.getType() == PairType.RIGID_FLEXIBLE)
@@ -101,7 +103,7 @@ public class WorkWorkNode implements Tree {
                 ).collect(Collectors.toList());
         List<Substitution> flatSubs = new ArrayList<>();
         stream.forEach(flatSubs::addAll);
-        if (PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION) { // hack to seed up first order search
+        if (pretendYoureDoingFirstOrder) { // hack to seed up first order search
             // this works because in 1st order search any found substitution must be a good one,
             // so we don't need to create multiple tree branches (effectively turning exponential into linear)
             if (!flatSubs.isEmpty()) flatSubs = ListUtil.of(flatSubs.get(0));
@@ -113,12 +115,10 @@ public class WorkWorkNode implements Tree {
                             Normalizer.betaNormalize(possibleSolution.substitute(disagreementPair.getLeastRigid().backToTerm()))
                     )).collect(Collectors.toList()));
 
-            Tree tree = new WorkWorkNode(parent, possibleSolution, newDs);
+            Tree tree = new WorkWorkNode(this, possibleSolution, newDs, pretendYoureDoingFirstOrder);
             result.add(tree);
         }
 
         return result;
     }
-
-    public static boolean PRETEND_YOU_RE_DOING_FIRST_ORDER_UNIFICATION = false;
 }

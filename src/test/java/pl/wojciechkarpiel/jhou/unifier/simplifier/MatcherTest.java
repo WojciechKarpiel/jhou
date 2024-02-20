@@ -171,8 +171,7 @@ class MatcherTest {
             assertEquals(b1.getBinder().get(1), b1.getHead().getTerm());
         }
 
-        UnificationSettings us = new UnificationSettings();
-        us.setMaxIterations(MAX_ITER_NONFINDABLE);
+        UnificationSettings us = new UnificationSettings(MAX_ITER_NONFINDABLE);
         SolutionIterator s = Unifier.unify(left, right, us);
         assertFalse(s.hasNext());
     }
@@ -234,8 +233,7 @@ class MatcherTest {
         }
 
 
-        UnificationSettings us = new UnificationSettings();
-        us.setMaxIterations(MAX_ITER_NONFINDABLE);
+        UnificationSettings us = new UnificationSettings(MAX_ITER_NONFINDABLE);
         SolutionIterator s = Unifier.unify(left, right, us);
         assertFalse(s.hasNext());
     }
@@ -266,8 +264,7 @@ class MatcherTest {
                                         x2)));
 
 
-        UnificationSettings us = new UnificationSettings();
-        us.setMaxIterations(8);
+        UnificationSettings us = new UnificationSettings(8);
         SolutionIterator s = Unifier.unify(left, right, us);
         TestUtil.assertGoodSolution(s.next(), left, right);
         TestUtil.assertGoodSolution(s.next(), left, right);

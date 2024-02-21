@@ -165,6 +165,10 @@ public class Api {
         return Normalizer.betaEtaNormalForm(term);
     }
 
+    public static Term betaNormalEtaContracted(Term term) {
+        return etaContract(betaNormalize(term));
+    }
+
     public static Type typeOf(Term term) {
         return TypeCalculator.calculateType(term);
     }

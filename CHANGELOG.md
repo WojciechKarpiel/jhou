@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9
+
+* Performance improvement: search tree pruning
+* Alpha equality check done lazily
+
 ## 0.8
 
 * Partial type inference for input formulas

@@ -1,19 +1,17 @@
 package pl.wojciechkarpiel.jhou.alpha;
 
-import pl.wojciechkarpiel.jhou.ast.Abstraction;
-import pl.wojciechkarpiel.jhou.ast.Term;
-import pl.wojciechkarpiel.jhou.ast.Variable;
+import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
+import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.substitution.SubstitutionPair;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.Head;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
+import pl.wojciechkarpiel.jhou.util.MapUtil;
+import pl.wojciechkarpiel.jhou.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlphaEqual {
@@ -22,14 +20,7 @@ public class AlphaEqual {
     }
 
     public static boolean isAlphaEqual(Abstraction a, Abstraction b) {
-        if (a.getVariable().equals(b.getVariable())) return a.getBody().equals(b.getBody());
-        if (!a.getVariable().getType().equals(b.getVariable().getType())) return false;
-        Variable v = Variable.freshVariable(a.getVariable().getType());
-        Substitution aSub = new Substitution(a.getVariable(), v);
-        Substitution bSub = new Substitution(b.getVariable(), v);
-        Term aVBody = aSub.substitute(a.getBody());
-        Term bVBody = bSub.substitute(b.getBody());
-        return aVBody.equals(bVBody);
+        return LazyAlphaEqual.isAlphaEqualLazy(a, b);
     }
 
 
@@ -88,21 +79,64 @@ public class AlphaEqual {
         return aLol.backToTerm().equals(bLol.backToTerm());
     }
 
-    public static class BenPair {
-        private final BetaEtaNormal left;
-        private final BetaEtaNormal right;
-
+    public static class BenPair extends Pair<BetaEtaNormal, BetaEtaNormal> {
         public BenPair(BetaEtaNormal left, BetaEtaNormal right) {
-            this.left = left;
-            this.right = right;
+            super(left, right);
+        }
+    }
+
+    private static class LazyAlphaEqual {
+
+        static boolean isAlphaEqualLazy(Term a, Term b) {
+            return new LazyAlphaEqual().alphaEqual(a, b);
         }
 
-        public BetaEtaNormal getLeft() {
-            return left;
+        private LazyAlphaEqual() {
+
         }
 
-        public BetaEtaNormal getRight() {
-            return right;
+        private final MapUtil<Variable, Variable> leftSub = new MapUtil<>(new HashMap<>());
+        private final MapUtil<Variable, Variable> rightSub = new MapUtil<>(new HashMap<>());
+
+        private boolean alphaEqual(Term left, Term right) {
+            return left.visit(new Visitor<Boolean>() {
+                @Override
+                public Boolean visitConstant(Constant constant) {
+                    return constant.equals(right);
+                }
+
+                @Override
+                public Boolean visitVariable(Variable variable) {
+                    Variable subL = leftSub.get(variable).orElse(variable);
+                    if (right instanceof Variable) {
+                        Variable subR = rightSub.get((Variable) right).orElse((Variable) right);
+                        return subL.equals(subR);
+                    } else return false;
+                }
+
+                @Override
+                public Boolean visitApplication(Application application) {
+                    if (right instanceof Application) {
+                        Application r = (Application) right;
+                        return alphaEqual(application.getFunction(), r.getFunction()) &&
+                                alphaEqual(application.getArgument(), r.getArgument());
+                    } else return false;
+                }
+
+                @Override
+                public Boolean visitAbstraction(Abstraction leftAbs) {
+                    if (right instanceof Abstraction) {
+                        Abstraction rightAbs = (Abstraction) right;
+                        if (rightAbs.getVariable().equals(leftAbs.getVariable()))
+                            return alphaEqual(leftAbs.getBody(), rightAbs.getBody());
+                        if (!rightAbs.getVariable().getType().equals(leftAbs.getVariable().getType())) return false;
+                        Variable newVar = Variable.freshVariable(rightAbs.getVariable().getType());
+                        return leftSub.withMapping(leftAbs.getVariable(), newVar,
+                                () -> rightSub.withMapping(rightAbs.getVariable(), newVar,
+                                        () -> alphaEqual(leftAbs.getBody(), rightAbs.getBody())));
+                    } else return false;
+                }
+            });
         }
     }
 }

@@ -2,6 +2,7 @@ package pl.wojciechkarpiel.jhou.substitution;
 
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
+import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ public class Substitution {
     public Term substitute(Term input) {
         Term result = input;
         for (SubstitutionPair substitutionPair : substitution) {
-            result = new Substituter(substitutionPair).substituteInt(result);
+            // might contain free variables if not beta-normalized. TODO: is it OK?
+            result = Normalizer.betaNormalize(new Substituter(substitutionPair).substituteInt(result));
         }
         return result;
     }

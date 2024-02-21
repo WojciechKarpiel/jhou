@@ -77,11 +77,15 @@ public class BetaEtaNormal {
         if (o == null || getClass() != o.getClass()) return false;
         BetaEtaNormal that = (BetaEtaNormal) o;
         return Objects.equals(head, that.head) && Objects.equals(binder, that.binder) && Objects.equals(arguments, that.arguments);
+        // TODO decide if BEN equality should be alpha. Counterpoint: Aplha-equalizing is core functionality of BEN, and making BEN alpha-equal would not allow to differentiate BENs before and after the core functionality is used
+        // return to term for alpha-conversion handling
+//        return backToTerm().equals(that.backToTerm());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(head, binder, arguments);
+//        return backToTerm().hashCode();
     }
 
     @Override

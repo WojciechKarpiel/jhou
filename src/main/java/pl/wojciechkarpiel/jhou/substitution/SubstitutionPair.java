@@ -2,6 +2,7 @@ package pl.wojciechkarpiel.jhou.substitution;
 
 import pl.wojciechkarpiel.jhou.ast.Term;
 import pl.wojciechkarpiel.jhou.ast.Variable;
+import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class SubstitutionPair {
 
     public SubstitutionPair(Variable variable, Term term) {
         this.variable = variable;
-        this.term = term;
+        this.term = Normalizer.betaNormalize(term);
         TypeCalculator.ensureEqualTypes(variable, term);
     }
 

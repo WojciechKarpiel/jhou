@@ -12,5 +12,6 @@ public class TestUtil {
         Term as = s.substitute(a);
         Term bs = s.substitute(b);
         assertTrue(alphaBetaEtaEqual(as, bs));
+        // TODO: check that there are no free variables!
     }
 }

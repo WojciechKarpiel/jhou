@@ -108,15 +108,10 @@ class UnifierTest {
 
         SolutionIterator solutions = Unifier.unify(left, right);
 
-        solutions.next();
-        solutions.next();
-        solutions.next();
-        solutions.next();
-        solutions.next();
-        solutions.next();
-        solutions.next();
-        solutions.next();
-        // TODO it should find 4 solutions, but duplicating each works too
+        System.out.println(solutions.next());
+        System.out.println(solutions.next());
+        System.out.println(solutions.next());
+        System.out.println(solutions.next());
         assertFalse(solutions.hasNext());
     }
 

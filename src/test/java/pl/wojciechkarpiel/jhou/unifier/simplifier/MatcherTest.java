@@ -6,6 +6,8 @@ import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
+import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
+import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
 import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
@@ -50,9 +52,15 @@ class MatcherTest {
 
         SolutionIterator si = Unifier.unify(left, right);
         assertTrue(si.hasNext());
-        for (int i = 0; i < 16; i++) { // how many?
-            TestUtil.assertGoodSolution(si.next(), left, right);
+        for (int i = 0; i < 4; i++) {
+            Substitution next = si.next();
+            System.out.println(i);
+            System.out.println(Normalizer.etaContract(Normalizer.betaNormalize(next.substitute(v))));
+            System.out.println(Normalizer.etaContract(Normalizer.betaNormalize(next.substitute(va1))));
+            System.out.println(Normalizer.etaContract(Normalizer.betaNormalize(next.substitute(va2))));
+            TestUtil.assertGoodSolution(next, left, right);
         }
+        assertFalse(si.hasNext());
     }
 
     @Test
@@ -82,9 +90,10 @@ class MatcherTest {
 
         SolutionIterator si = Unifier.unify(left, right);
         assertTrue(si.hasNext());
-        for (int i = 0; i < 16; i++) { // how many?
+        for (int i = 0; i < 4; i++) {
             TestUtil.assertGoodSolution(si.next(), left, right);
         }
+        assertFalse(si.hasNext());
     }
 
     @Test
@@ -266,11 +275,10 @@ class MatcherTest {
 
         UnificationSettings us = new UnificationSettings(8);
         SolutionIterator s = Unifier.unify(left, right, us);
-        TestUtil.assertGoodSolution(s.next(), left, right);
-        TestUtil.assertGoodSolution(s.next(), left, right);
-        TestUtil.assertGoodSolution(s.next(), left, right);
-        TestUtil.assertGoodSolution(s.next(), left, right);
-        TestUtil.assertGoodSolution(s.next(), left, right);
+        for (int i = 0; i < 2; i++) {
+            Substitution next = s.next();
+            TestUtil.assertGoodSolution(next, left, right);
+        }
         assertFalse(s.hasNext());
     }
 

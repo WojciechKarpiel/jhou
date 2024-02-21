@@ -1,7 +1,10 @@
 package pl.wojciechkarpiel.jhou.unifier.tree;
 
+import pl.wojciechkarpiel.jhou.ast.Term;
+import pl.wojciechkarpiel.jhou.ast.Variable;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
+import pl.wojciechkarpiel.jhou.substitution.SubstitutionPair;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementPair;
 import pl.wojciechkarpiel.jhou.unifier.DisagreementSet;
 import pl.wojciechkarpiel.jhou.unifier.PairType;
@@ -9,10 +12,9 @@ import pl.wojciechkarpiel.jhou.unifier.simplifier.Matcher;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.Simplifier;
 import pl.wojciechkarpiel.jhou.unifier.simplifier.result.*;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
+import pl.wojciechkarpiel.jhou.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorkWorkNode implements Tree {
@@ -101,8 +103,9 @@ public class WorkWorkNode implements Tree {
                 .map(disagreementPair ->
                         Matcher.matchS(disagreementPair.getMostRigid(), disagreementPair.getLeastRigid())
                 ).collect(Collectors.toList());
-        List<Substitution> flatSubs = new ArrayList<>();
-        stream.forEach(flatSubs::addAll);
+        List<Substitution> qflatSubs = new ArrayList<>();
+        stream.forEach(qflatSubs::addAll);
+        List<Substitution> flatSubs = deduplicateSort(qflatSubs);
         if (pretendYoureDoingFirstOrder) { // hack to seed up first order search
             // this works because in 1st order search any found substitution must be a good one,
             // so we don't need to create multiple tree branches (effectively turning exponential into linear)
@@ -121,4 +124,54 @@ public class WorkWorkNode implements Tree {
 
         return result;
     }
+
+    /*
+     * optiomize flatsubs in a folllowing way:
+     *
+     * 1. deduplicate subs, ie let all x,S(x) be different
+     * 2. Sort by count of sobstitutions for a var
+     * 3. generate children only for the least used var (but keep the other disagreement pairs!)
+     */
+
+    // assume all subs are singles
+    private static List<Substitution> deduplicateSort(List<Substitution> input) {
+        if (input.isEmpty()) return input;
+
+        Map<Variable, Set<Term>> dedupByVar = new HashMap<>(input.size());
+        for (Substitution pair_ : input) {
+            if (pair_.getSubstitution().size() > 1) throw new RuntimeException();
+            if (pair_.getSubstitution().isEmpty()) continue;
+            SubstitutionPair pair = pair_.getSubstitution().get(0);
+            Set<Term> s_ = new HashSet<>();
+            Set<Term> s = dedupByVar.putIfAbsent(pair.getVariable(), s_);
+            if (s == null) s = s_;
+            s.add(pair.getTerm());
+        }
+        if (dedupByVar.isEmpty()) {
+            return input;
+        }
+
+        List<Pair<Variable, Set<Term>>> least = new ArrayList<>();
+        int minCount = dedupByVar.values().stream().mapToInt(Set::size).min().getAsInt();
+        dedupByVar.entrySet().stream().filter(p -> p.getValue().size() == minCount)
+                .forEach(p -> least.add(Pair.of(p.getKey(), p.getValue())));
+
+        least.sort(Comparator.comparingInt(o -> o.getLeft().getId().getId()));
+
+        return least.get(0).getRight().stream().map(sbs ->
+                new Substitution(least.get(0).getLeft(), sbs)).collect(Collectors.toList());
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+

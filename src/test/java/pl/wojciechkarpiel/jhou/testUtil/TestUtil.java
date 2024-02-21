@@ -8,6 +8,7 @@ import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static pl.wojciechkarpiel.jhou.Api.alphaBetaEtaEqual;
 
 public class TestUtil {
@@ -19,12 +20,14 @@ public class TestUtil {
         Set<Variable> freeA = FreeVariable.getFreeVariables(as);
         Set<Variable> freeB = FreeVariable.getFreeVariables(bs);
 
-        Set<Variable> origAfv = FreeVariable.getFreeVariables(a);
-        Set<Variable> origBfv = FreeVariable.getFreeVariables(b);
         // todo not good, all FVs should be eliminated and exchanged for a constant, no leftovers
         if (!freeA.isEmpty() || !freeB.isEmpty()) {
-            System.out.println("NO GOOD - LEFT FVs");
+            fail();
         }
+
+        // this in unnecessary, implied by above
+        Set<Variable> origAfv = FreeVariable.getFreeVariables(a);
+        Set<Variable> origBfv = FreeVariable.getFreeVariables(b);
         freeB.removeAll(origBfv);
         freeA.removeAll(origBfv);
         freeB.removeAll(origAfv);

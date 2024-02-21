@@ -33,7 +33,7 @@ public class Substitution {
     public Term substitute(Term input) {
         Term result = input;
         for (SubstitutionPair substitutionPair : substitution) {
-            // might contain free variables if not beta-normalized. TODO: is it OK?
+            // might contain free variables if not beta-normalized. TODO: is it a sign of a bug?
             result = Normalizer.betaNormalize(new Substituter(substitutionPair).substituteInt(result));
         }
         return result;
@@ -57,7 +57,30 @@ public class Substitution {
         return "Substitution{" + substitution + '}';
     }
 
-    private static class Substituter {
+    /**
+     * Assigns a type to the variable
+     *
+     * @param variable Variable with inferred type
+     * @return Variable of the same ID, and with the type assigned. If the input variable is typed, then acts as an identity function
+     */
+    public Variable regenerateType(Variable variable) {
+        if (variable.getType() != null) return variable;
+        for (SubstitutionPair pair : substitution) {
+            Variable typedVariable = pair.getVariable();
+            if (typedVariable.getId().equals(variable.getId())) {
+                return typedVariable;
+            }
+        }
+        throw new UnrecognizedUntypedVariableException(variable);
+    }
+
+    public static class UnrecognizedUntypedVariableException extends RuntimeException {
+        private UnrecognizedUntypedVariableException(Variable variable) {
+            super("Variable " + variable + " has no type and is not a part of the substitution");
+        }
+    }
+
+    private class Substituter {
         SubstitutionPair substitution;
 
         private Substituter(SubstitutionPair inSub) {
@@ -72,7 +95,8 @@ public class Substitution {
                 }
 
                 @Override
-                public Term visitVariable(Variable variable) {
+                public Term visitVariable(Variable variable_) {
+                    Variable variable = Substitution.this.regenerateType(variable_);
                     if (Substituter.this.substitution.getVariable().equals(variable)) {
                         return Substituter.this.substitution.getTerm();
                     } else {

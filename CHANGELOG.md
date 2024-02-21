@@ -5,6 +5,7 @@
 * Performance improvement: search tree pruning
 * Performance: alpha equality check done lazily
   (i.e. alpha equality check does not eagerly replace variables in the entire abstraction body)
+* Bugfix: Variables with inferred types can be safely substituted
 
 ## 0.8
 

@@ -106,6 +106,19 @@ public class SolutionIterator implements Iterator<Substitution> {
     }
 
     /**
+     * @return next element from the iterator, but does not consume it. Returns `Optional.empty()` iff `hasNext()` is false.
+     */
+    public Optional<Substitution> peek() {
+        Optional<WeBackNode> weBack = tryNext();
+        if (weBack.isPresent()) {
+            WeBackNode weSoBack = weBack.get();
+            return Optional.of(weSoBack.fullSolution());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * @return true if further search is not performed because of reaching the max search depth
      */
     public boolean searchLimitReached() {

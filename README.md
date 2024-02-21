@@ -159,6 +159,8 @@ It's methods are:
 
 * `boolean hasNext()` - inherited from `Iterator`
 * `Substitution next()` - inherited from `Iterator`
+* `Optional<Substitution> peek()` - returns next element from the iterator, but does not consume it.
+  Returns `Optional.empty()` iff `hasNext()` is false.
 * `boolean searchLimitReached()` - when `hasNext()` returns `false`, one can check
   if no more solutions are found because of search limit reached (see `UnificationSettings`),
   or if there are truly no more solutions.

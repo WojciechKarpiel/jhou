@@ -10,6 +10,8 @@ import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.substitution.SubstitutionPair;
 import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static pl.wojciechkarpiel.jhou.Api.*;
 
@@ -127,6 +129,7 @@ class UnifierTest {
         SolutionIterator s = Unifier.unify(l3l, c);
         s.next();
         s.next();
+        s.next();
 
         // now the one I've been looking for <3
         Substitution beautiful = s.next();
@@ -147,5 +150,103 @@ class UnifierTest {
                         app(z2, app(app(snd.getVariable(), z1), z2))));
         assertEquals(typeOf(expectedReplacement), typeOf(y));
         assertEquals(expectedReplacement, beautiful.getSubstitution().get(0).getTerm());
+    }
+
+    @Test
+    void vacuousUnif() {
+        {
+            Type t = freshType("T");
+            Variable v = freshVariable(t, "v");
+            SolutionIterator si = unify(v, v);
+            assertTrue(si.hasNext());
+            Substitution s = si.next();
+            assertFalse(si.hasNext());
+            assertInstanceOf(Constant.class, s.substitute(v));
+            TestUtil.assertGoodSolution(s, v, v);
+        }
+        {
+            // same but with infetence
+            Variable v = freshVariable("v");
+            SolutionIterator si = unify(v, v);
+
+            assertTrue(si.hasNext());
+            Substitution s;
+            s = si.next();
+            assertFalse(si.hasNext());
+            TestUtil.assertGoodSolution(s, v, v);
+            assertInstanceOf(Constant.class, s.substitute(v));
+            assertEquals(v.getId(), s.regenerateType(v).getId());
+        }
+    }
+
+    @Test
+    void almostvacuousUnif() {
+        {
+            Type t = freshType("T");
+            Variable v = freshVariable(t, "v");
+            Variable w = freshVariable(t, "w");
+            SolutionIterator si = unify(v, w);
+            assertTrue(si.hasNext());
+            Optional<Substitution> so = si.peek();
+            Substitution s = si.next();
+            assertTrue(so.isPresent());
+            assertEquals(s, so.get());
+            assertFalse(si.hasNext());
+            assertInstanceOf(Constant.class, s.substitute(v));
+            assertInstanceOf(Constant.class, s.substitute(w));
+            TestUtil.assertGoodSolution(s, v, w);
+        }
+        {
+            // same but with infetence
+            Variable v = freshVariable("v");
+            Variable w = freshVariable("w");
+            SolutionIterator si = unify(v, w);
+
+            assertTrue(si.hasNext());
+            Substitution s;
+            s = si.next();
+            assertFalse(si.hasNext());
+            TestUtil.assertGoodSolution(s, v, w);
+
+            assertInstanceOf(Constant.class, s.substitute(v));
+            assertInstanceOf(Constant.class, s.substitute(w));
+            assertEquals(v.getId(), s.regenerateType(v).getId());
+            assertEquals(w.getId(), s.regenerateType(w).getId());
+        }
+
+        {
+            // same but with PARTIAL-left infetence
+            Type t = freshType("T");
+            Variable v = freshVariable(t, "v");
+            Variable w = freshVariable("w");
+            SolutionIterator si = unify(v, w);
+
+            assertTrue(si.hasNext());
+            Substitution s;
+            s = si.next();
+            assertFalse(si.hasNext());
+            assertInstanceOf(Constant.class, s.substitute(v));
+            assertInstanceOf(Constant.class, s.substitute(w));
+            TestUtil.assertGoodSolution(s, v, w);
+            assertEquals(v.getId(), s.regenerateType(v).getId());
+            assertEquals(v, s.regenerateType(v));
+            assertEquals(w.getId(), s.regenerateType(w).getId());
+        }
+        {
+            // same but with PARTIAL-right infetence
+            Type t = freshType("T");
+            Variable v = freshVariable("v");
+            Variable w = freshVariable(t, "w");
+            SolutionIterator si = unify(v, w);
+
+            assertTrue(si.hasNext());
+            Substitution s;
+            s = si.next();
+            assertFalse(si.hasNext());
+            TestUtil.assertGoodSolution(s, v, w);
+            assertEquals(v.getId(), s.regenerateType(v).getId());
+            assertEquals(w, s.regenerateType(w));
+            assertEquals(w.getId(), s.regenerateType(w).getId());
+        }
     }
 }

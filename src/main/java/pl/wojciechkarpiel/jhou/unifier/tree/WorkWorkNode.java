@@ -158,9 +158,12 @@ public class WorkWorkNode implements Tree {
 
         least.sort(Comparator.comparingInt(o -> o.getLeft().getId().getId()));
 
-        return least.get(0).getRight().stream().map(sbs ->
-                new Substitution(least.get(0).getLeft(), sbs)).collect(Collectors.toList());
-
+        Pair<Variable, Set<Term>> minSized = least.get(0);
+        return minSized.getRight().stream()
+                // Sorting here doesn't help the algorithm, it's here to ensure deterministic outputs
+                .sorted(Comparator.comparingInt(Term::hashCode))
+                .map(sbs -> new Substitution(minSized.getLeft(), sbs))
+                .collect(Collectors.toList());
     }
 }
 

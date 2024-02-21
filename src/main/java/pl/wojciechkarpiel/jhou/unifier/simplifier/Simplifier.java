@@ -44,10 +44,9 @@ public class Simplifier {
             }
             ds = newL;
         }
-        ;
 
 
-        // 2. check if its the end (flex-flex)
+        // 2. check if it's the end (flex-flex)
         if (ds.stream().allMatch(q -> q.getType() == PairType.FLEXIBLE_FLEXIBLE)) {
             List<SubstitutionPair> fin = new ArrayList<>();
             Map<Type, Constant> cs = new HashMap<>();
@@ -71,39 +70,6 @@ public class Simplifier {
         return new SimplificationNode(new DisagreementSet(ds));
     }
 
-    /**
-     * Remove arguments from the normal form and check the rest (i.e. the heading)
-     */
-//    private static boolean equalHeadings(BetaEtaNormal a, BetaEtaNormal b) {
-//        BetaEtaNormal aLol = BetaEtaNormal.fromFakeNormal(a.getHead(), a.getBinder(), new ArrayList<>());
-//        BetaEtaNormal bLol = BetaEtaNormal.fromFakeNormal(b.getHead(), b.getBinder(), new ArrayList<>());
-//        return aLol.backToTerm().equals(bLol.backToTerm());
-//    }
-//
-//    public static Optional<List<DisagreementPair>> breakdownRigidRigid(BetaEtaNormal a, BetaEtaNormal b) {
-//        if ((a.getArguments().size() == b.getArguments().size()) && equalHeadings(a, b)) {
-//            Optional<BetaEtaNormal> bnO = HeaderUnifier.alphaUnifyHeaderReturnNewRight(a, b);
-//            if (bnO.isPresent()) {
-//                BetaEtaNormal bNN = bnO.get();
-//
-//                List<DisagreementPair> ds = new ArrayList<>();
-//                for (int i = 0; i < bNN.getArguments().size(); i++) {
-//
-//                    DisagreementPair dp = new DisagreementPair(
-//                            extract(a, a.getArguments().get(i)),
-//                            extract(bNN, bNN.getArguments().get(i))
-//                    );
-//                    ds.add(dp);
-//                }
-//
-//                return Optional.of(ds);
-//            } else {
-//                return Optional.empty();
-//            }
-//        } else {
-//            return Optional.empty();
-//        }
-//    }
     public static Optional<List<DisagreementPair>> breakdownRigidRigid(BetaEtaNormal a_, BetaEtaNormal b_) {
         Optional<AlphaEqual.BenPair> benPair = AlphaEqual.alphaEqualizeHeading(a_, b_);
         if (!benPair.isPresent()) return Optional.empty();

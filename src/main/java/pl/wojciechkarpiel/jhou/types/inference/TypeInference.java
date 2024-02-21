@@ -124,15 +124,14 @@ public class TypeInference {
 
 
     private Type getT(Term t, Substitution s) {
-        Type tt = null;
+        Type tt;
         Term b = null;
 
-        Term a = t;
-        if (a instanceof Variable) {
-            b = getAnon(a);
+        if (t instanceof Variable) {
+            b = getAnon(t);
         }
-        if (a instanceof Constant) {
-            b = getAnon(a);
+        if (t instanceof Constant) {
+            b = getAnon(t);
         }
         if (b != null) {
             Term q = s.substitute(b);
@@ -254,11 +253,10 @@ public class TypeInference {
             }
             {
                 Type rlType = null;
-                Term orig = origTerm;
-                if (orig instanceof Constant) {
-                    rlType = ((Constant) orig).getType();
-                } else if (orig instanceof Variable) {
-                    rlType = ((Variable) orig).getType();
+                if (origTerm instanceof Constant) {
+                    rlType = ((Constant) origTerm).getType();
+                } else if (origTerm instanceof Variable) {
+                    rlType = ((Variable) origTerm).getType();
                 }
                 if (rlType == null) continue;
 

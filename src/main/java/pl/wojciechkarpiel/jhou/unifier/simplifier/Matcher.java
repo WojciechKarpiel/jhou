@@ -95,7 +95,7 @@ public class Matcher {
             // yooo check if the type matches
             Type pType = TypeCalculator.calculateType(e);
             Type acType = ((Variable) rigidFlexible.flexible.getHead().getTerm()).getType();
-            //  it's not mentioned in paper, but it can (and likely) will) happen that the type of arg is different than contnt
+            //  it's not mentioned in paper, but it can (and likely will) happen that the type of arg is different from content
             if (pType.equals(acType)) {
                 res.add(e);
             }
@@ -113,20 +113,7 @@ public class Matcher {
         for (int j = 0; j < headType.arity(); j++) {
             // arg od benheadBinder, index J
             Term l3l = benHeadBinder.getArguments().get(j);
-            Type targetType = TypeCalculator.calculateType(l3l);
-
-            for (int k = binders.size() - 1; k >= 0; k--) {
-                targetType = new ArrowType(binders.get(k).getType(), targetType);
-            }
-            Variable hi = new Variable(Id.uniqueId(), targetType);
-            BetaEtaNormal arg = BetaEtaNormal.fromFakeNormal(
-                    new Head.HeadVariable(hi),
-                    new ArrayList<>(),
-                    new ArrayList<>(binders) // replacement binders are arg's argyments
-            );
-            Term term = arg.backToTerm();
-            TypeCalculator.calculateType(term); //sanity check
-            args.add(term);
+            args.add(argOfArg(binders, l3l));
         }
         Term term = BetaEtaNormal.fromFakeNormal(newHead, binders, args).backToTerm();
         TypeCalculator.calculateType(term);
@@ -147,23 +134,30 @@ public class Matcher {
         Head newHead = rigidFlexible.getRigid().getHead();
         List<Term> args = new ArrayList<>(rigidFlexible.rigidTermsArgumentsSize());
         for (Term rigidArg : rigidFlexible.rigidTermArguments()) {
-            Type targetType = TypeCalculator.calculateType(rigidArg);
-            for (int i = binders.size() - 1; i >= 0; i--) {
-                targetType = new ArrowType(binders.get(i).getType(), targetType);
-            }
-            Variable hi = new Variable(Id.uniqueId(), targetType);
-            BetaEtaNormal arg = BetaEtaNormal.fromFakeNormal(
-                    new Head.HeadVariable(hi),
-                    new ArrayList<>(),
-                    new ArrayList<>(binders) // replacement binders are arg's arguments
-            );
-            Term term = arg.backToTerm();
-            TypeCalculator.calculateType(term); //sanity check
-            args.add(term);
+            args.add(argOfArg(binders, rigidArg));
         }
 
         Term term = BetaEtaNormal.fromFakeNormal(newHead, binders, args).backToTerm();
         TypeCalculator.calculateType(term);
         return term;
     }
+
+    private static Term argOfArg(List<Variable> binders, Term realArgUponWhichTheArgArgIsBased) {
+
+        Type targetType = TypeCalculator.calculateType(realArgUponWhichTheArgArgIsBased);
+
+        for (int k = binders.size() - 1; k >= 0; k--) {
+            targetType = new ArrowType(binders.get(k).getType(), targetType);
+        }
+        Variable hi = new Variable(Id.uniqueId(), targetType);
+        BetaEtaNormal arg = BetaEtaNormal.fromFakeNormal(
+                new Head.HeadVariable(hi),
+                new ArrayList<>(),
+                new ArrayList<>(binders) // replacement binders are arg's arguments
+        );
+        Term term = arg.backToTerm();
+        TypeCalculator.calculateType(term); //sanity check
+        return term;
+    }
+
 }

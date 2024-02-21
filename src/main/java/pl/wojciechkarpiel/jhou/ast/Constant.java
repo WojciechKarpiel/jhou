@@ -17,7 +17,7 @@ public class Constant implements Term {
     }
 
     /**
-     * @param name For printing only, equality is decided by Id
+     * @param name For printing only, equality is decided by the ID
      */
     public Constant(Id id, Type type, String name) {
         this.id = id;

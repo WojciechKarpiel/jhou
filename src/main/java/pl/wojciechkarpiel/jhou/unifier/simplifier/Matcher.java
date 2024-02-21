@@ -60,7 +60,7 @@ public class Matcher {
 
     public static List<Substitution> matchS(BetaEtaNormal rigid, BetaEtaNormal flexible) {
         List<Term> matches = match(rigid, flexible);
-        Variable v = HeadOps.asVariable(flexible.getHead()).get();
+        Variable v = HeadOps.asVariableYolo(flexible.getHead());
         List<Substitution> substitutions = new ArrayList<>(matches.size());
         for (Term match : matches) {
             Substitution sub = new Substitution(v, match);
@@ -78,7 +78,6 @@ public class Matcher {
 
     public static List<Term> match(RigidFlexible rigidFlexible) {
         BetaEtaNormal rigid = rigidFlexible.getRigid();
-        BetaEtaNormal flexible = rigidFlexible.getFlexible();
         List<Term> res = new ArrayList<>();
         Optional<Constant> rigidConstant = HeadOps.asConstant(rigid.getHead());
         rigidConstant.ifPresent(c -> res.add(imitate(rigidFlexible)));

@@ -53,8 +53,8 @@ public class Simplifier {
             for (DisagreementPair d : ds) {
                 BetaEtaNormal aN = d.getMostRigid();
                 BetaEtaNormal bN = d.getLeastRigid();
-                Variable va = HeadOps.asVariable(aN.getHead()).get();
-                Variable vb = HeadOps.asVariable(bN.getHead()).get();
+                Variable va = HeadOps.asVariableYolo(aN.getHead());
+                Variable vb = HeadOps.asVariableYolo(bN.getHead());
                 Type t = va.getType();
                 cs.putIfAbsent(t, new Constant(Id.uniqueId(), t));
                 Constant c = cs.get(t);

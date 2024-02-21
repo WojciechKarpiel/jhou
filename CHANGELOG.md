@@ -3,7 +3,8 @@
 ## 0.9
 
 * Performance improvement: search tree pruning
-* Alpha equality check done lazily
+* Performance: alpha equality check done lazily
+  (i.e. alpha equality check does not eagerly replace variables in the entire abstraction body)
 
 ## 0.8
 

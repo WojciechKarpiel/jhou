@@ -20,10 +20,7 @@ import pl.wojciechkarpiel.jhou.util.ListUtil;
 import pl.wojciechkarpiel.jhou.util.MapUtil;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // TODO: this entire class is hideous
@@ -115,13 +112,17 @@ public class TypeInference {
     private final PrintStream printStream;
     private final AllowedTypeInference allowedInference;
 
+    private Set<Type> newTypes = null;
+
     private TypeInference(PrintStream printStream, AllowedTypeInference allowedTypeInference) {
         this.printStream = printStream;
         this.allowedInference = allowedTypeInference;
     }
 
-    private boolean inventedNewTypes = false;
-
+    public final Set<Type> getNewTypes() {
+        if (newTypes == null) newTypes = new HashSet<>();
+        return newTypes;
+    }
 
     private Type getT(Term t, Substitution s) {
         Type tt;
@@ -183,15 +184,15 @@ public class TypeInference {
             public Type visitConstant(Constant constant) {
                 Type type = constanTypeMap.get(constant);
                 if (type == null) {
-                    inventedNewTypes = true;
                     if (AllowedTypeInference.PERMISSIVE != allowedInference) {
                         throw new InferenceHasArbitrarySolutionsException();
 
                     }
                     Id id = Id.uniqueId();
-                    BaseType value = new BaseType(id, "infered_arbitrarty_" + id.getId());
-                    printStream.println("Creating a new, arbitrary type: " + value);
-                    constanTypeMap.put(constant, value);
+                    BaseType freshType = new BaseType(id, "infered_arbitrarty_" + id.getId());
+                    printStream.println("Creating a new, arbitrary type: " + freshType);
+                    getNewTypes().add(freshType);
+                    constanTypeMap.put(constant, freshType);
                     return fakeVarToRealType(constant);
                 }
                 return type;

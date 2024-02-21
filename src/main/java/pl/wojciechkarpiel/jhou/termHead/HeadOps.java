@@ -10,6 +10,15 @@ public class HeadOps {
     }
 
 
+    public static class HeadIsNotAVariableException extends RuntimeException {
+        private HeadIsNotAVariableException(Head head) {
+            super(head + " is not a variable");
+        }
+    }
+
+    public static Variable asVariableYolo(Head h) {
+        return asVariable(h).orElseThrow(() -> new HeadIsNotAVariableException(h));
+    }
     public static Optional<Variable> asVariable(Head h) {
         return h.visit(new Head.HeadVisitor<Optional<Variable>>() {
             @Override

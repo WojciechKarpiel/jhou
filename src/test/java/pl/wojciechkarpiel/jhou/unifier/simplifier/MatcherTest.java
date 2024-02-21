@@ -38,11 +38,11 @@ class MatcherTest {
                         arrow(b, arrow(c, d)),
                         t));
         Constant C = (Constant) freshConstant(targetT, "C");
-        Variable v = (Variable) freshVariable(targetT, "V");
+        Variable v = freshVariable(targetT, "V");
         Constant arg1 = (Constant) freshConstant(arrow(a, arrow(b, c)), "arg1");
         Constant arg2 = (Constant) freshConstant(arrow(b, arrow(c, d)), "arg2");
-        Variable va1 = (Variable) freshVariable(arrow(a, arrow(b, c)), "va1");
-        Variable va2 = (Variable) freshVariable(arrow(b, arrow(c, d)), "va2");
+        Variable va1 = freshVariable(arrow(a, arrow(b, c)), "va1");
+        Variable va2 = freshVariable(arrow(b, arrow(c, d)), "va2");
 
 
         Term left = app(app(C, arg1), arg2);

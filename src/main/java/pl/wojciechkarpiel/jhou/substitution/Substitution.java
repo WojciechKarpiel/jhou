@@ -91,7 +91,6 @@ public class Substitution {
                 @Override
                 public Term visitAbstraction(Abstraction abstraction) {
                     Variable v = abstraction.getVariable();
-                    int i;
                     Optional<SubstitutionPair> oldPair = Optional.empty();
                     if (v.equals(Substituter.this.substitution.getVariable())) {
                         oldPair = Optional.of(Substituter.this.substitution);
@@ -101,9 +100,7 @@ public class Substitution {
                             abstraction.getVariable(),
                             substituteInt(abstraction.getBody())
                     );
-                    if (oldPair.isPresent()) {
-                        Substituter.this.substitution = oldPair.get();
-                    }
+                    oldPair.ifPresent(substitutionPair -> Substituter.this.substitution = substitutionPair);
                     return ret;
                 }
             });

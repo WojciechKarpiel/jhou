@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.10
+
 ## 0.9
 
 * Performance improvement: search tree pruning

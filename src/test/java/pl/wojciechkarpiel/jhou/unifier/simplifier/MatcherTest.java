@@ -114,9 +114,9 @@ class MatcherTest {
         BetaEtaNormal rigidBen = BetaEtaNormal.normalize(rigid);
 
 
-        assertThrows(IllegalArgumentException.class, () -> Matcher.match(new Matcher.RigidFlexible(flexBen, flexBen)));
-        assertThrows(IllegalArgumentException.class, () -> Matcher.match(new Matcher.RigidFlexible(rigidBen, rigidBen)));
-        List<Term> matched = Matcher.match(new Matcher.RigidFlexible(rigidBen, flexBen));
+        assertThrows(IllegalArgumentException.class, () -> Matcher.possibleSubstitutionTerms(new Matcher.RigidFlexible(flexBen, flexBen)));
+        assertThrows(IllegalArgumentException.class, () -> Matcher.possibleSubstitutionTerms(new Matcher.RigidFlexible(rigidBen, rigidBen)));
+        List<Term> matched = Matcher.possibleSubstitutionTerms(new Matcher.RigidFlexible(rigidBen, flexBen));
         assertEquals(2, matched.size()); // one rejected because of mismatch
         {
             BetaEtaNormal impersonation = BetaEtaNormal.normalize(matched.get(0));
@@ -154,7 +154,7 @@ class MatcherTest {
         Type rightType = typeOf(right);
         assertEquals(eftType, rightType);
 
-        List<Term> match = Matcher.match(new Matcher.RigidFlexible(BetaEtaNormal.normalize(right), BetaEtaNormal.normalize(left)));
+        List<Term> match = Matcher.possibleSubstitutionTerms(new Matcher.RigidFlexible(BetaEtaNormal.normalize(right), BetaEtaNormal.normalize(left)));
         assertEquals(3, match.size());
         Term imitator = match.get(0);
         {
@@ -216,7 +216,7 @@ class MatcherTest {
         BetaEtaNormal noRight = BetaEtaNormal.normalize(right);
         BetaEtaNormal noLeft = BetaEtaNormal.normalize(left);
         SimplificationResult q = Simplifier.simplify(new DisagreementSet(ListUtil.of(new DisagreementPair(left, right))));
-        List<Term> match = Matcher.match(new Matcher.RigidFlexible(noRight, noLeft));
+        List<Term> match = Matcher.possibleSubstitutionTerms(new Matcher.RigidFlexible(noRight, noLeft));
         assertEquals(3, match.size());
         Term imitator = match.get(0);
         {

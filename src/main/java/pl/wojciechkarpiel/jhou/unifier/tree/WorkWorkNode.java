@@ -98,20 +98,19 @@ public class WorkWorkNode implements Tree {
 
     private List<Tree> createChildNodes(DisagreementSet disagreement) {
         List<Tree> result = new ArrayList<>();
-        List<List<Substitution>> stream = disagreement.getDisagreements().stream()
+        List<Substitution> flattenedSubstitutions = disagreement.getDisagreements().stream()
                 .filter(dp -> dp.getType() == PairType.RIGID_FLEXIBLE)
-                .map(disagreementPair ->
-                        Matcher.matchS(disagreementPair.getMostRigid(), disagreementPair.getLeastRigid())
-                ).collect(Collectors.toList());
-        List<Substitution> qflatSubs = new ArrayList<>();
-        stream.forEach(qflatSubs::addAll);
-        List<Substitution> flatSubs = deduplicateSort(qflatSubs);
+                .flatMap(disagreementPair ->
+                        Matcher.match(disagreementPair.getMostRigid(), disagreementPair.getLeastRigid())
+                                .intoSubstitutionStream())
+                .collect(Collectors.toList());
+        flattenedSubstitutions = deduplicateSort(flattenedSubstitutions);
         if (pretendYoureDoingFirstOrder) { // hack to seed up first order search
             // this works because in 1st order search any found substitution must be a good one,
             // so we don't need to create multiple tree branches (effectively turning exponential into linear)
-            if (!flatSubs.isEmpty()) flatSubs = ListUtil.of(flatSubs.get(0));
+            if (!flattenedSubstitutions.isEmpty()) flattenedSubstitutions = ListUtil.of(flattenedSubstitutions.get(0));
         }
-        for (Substitution possibleSolution : flatSubs) {
+        for (Substitution possibleSolution : flattenedSubstitutions) {
             DisagreementSet newDs = new DisagreementSet(disagreement.getDisagreements().stream().map(disagreementPair ->
                     new DisagreementPair(
                             Normalizer.betaNormalize(possibleSolution.substitute(disagreementPair.getMostRigid().backToTerm())),
@@ -131,9 +130,9 @@ public class WorkWorkNode implements Tree {
      * 1. deduplicate subs, ie let all x,S(x) be different
      * 2. Sort by count of sobstitutions for a var
      * 3. generate children only for the least used var (but keep the other disagreement pairs!)
+     *
+     * method assumes that all inputs are single-variable substitutions
      */
-
-    // assume all subs are singles
     private static List<Substitution> deduplicateSort(List<Substitution> input) {
         if (input.isEmpty()) return input;
 

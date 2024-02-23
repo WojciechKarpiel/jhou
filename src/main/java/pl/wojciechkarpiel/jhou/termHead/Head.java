@@ -29,7 +29,7 @@ public interface Head {
             return v;
         }
 
-        public Variable getV() {
+        public Variable getVariable() {
             return v;
         }
 

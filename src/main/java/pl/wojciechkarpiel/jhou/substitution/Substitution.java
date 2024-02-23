@@ -47,6 +47,14 @@ public class Substitution {
         return Objects.equals(substitution, that.substitution);
     }
 
+    public boolean alphaEquals(Substitution that) {
+        if (this.substitution.size() != that.substitution.size()) return false;
+        for (int i = 0; i < substitution.size(); i++) {
+            if (!this.substitution.get(i).alphaEquals(that.substitution.get(i))) return false;
+        }
+        return true;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(substitution);

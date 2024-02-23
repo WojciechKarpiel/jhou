@@ -65,7 +65,7 @@ class UnifierTest {
         assertEquals(y, sub.getVariable());
         Variable fresh = new Variable(Id.uniqueId(), xT);
         Term lamxx = new Abstraction(fresh, fresh);
-        assertEquals(lamxx, sub.getTerm());
+        TestUtil.assertAlphaEqual(lamxx, sub.getTerm());
     }
 
     @Test
@@ -94,7 +94,7 @@ class UnifierTest {
         Variable v = freshVariable(arrow(t, t), "v");
         SolutionIterator it = unify(lamxx, v);
 
-        assertEquals(new Substitution(v, lamxx), it.next());
+        TestUtil.assertAlphaEqual(new Substitution(v, lamxx), it.next());
         assertFalse(it.hasNext());
     }
 
@@ -143,13 +143,13 @@ class UnifierTest {
         Term v10t = abstraction(t, a1 -> abstraction(arrow(t, t), a2 -> a1));
         assertEquals(v10v.getType(), typeOf(v10t));
         assertEquals(snd.getVariable().getType(), v10v.getType());
-        assertEquals(snd.getTerm(), v10t);
+        TestUtil.assertAlphaEqual(snd.getTerm(), v10t);
 
         Term expectedReplacement = abstraction(t, "z1", z1 ->
                 abstraction(arrow(t, t), "z2", z2 ->
                         app(z2, app(app(snd.getVariable(), z1), z2))));
         assertEquals(typeOf(expectedReplacement), typeOf(y));
-        assertEquals(expectedReplacement, beautiful.getSubstitution().get(0).getTerm());
+        TestUtil.assertAlphaEqual(expectedReplacement, beautiful.getSubstitution().get(0).getTerm());
     }
 
     @Test

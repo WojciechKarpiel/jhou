@@ -87,9 +87,7 @@ Type natToNat = arrow(nat, nat);
 
 ### Term construction
 
-TODO: describe more
-
-`Term.equals` is alpha-equality. For other notions of equality, see "Normalization and utility" section.
+`Term.equals` is raw structural equality. For other notions of equality, see "Normalization and utility" section.
 
 * `Variable freshVariable(Type type)` - create a new free variable of type `type`. A `Variable` is a subtype of `Term`
   Substitution for such variables will be searched for by the unification procedure
@@ -120,6 +118,7 @@ TODO: describe more
   in the beta-eta normal form `betaEtaNormalize`
 * `Term etaExpand(Term term)`
 * `Term betaEtaNormalForm(Term term)` - term in beta-eta normal form (see paper)
+* `Term betaNormalEtaContracted(Term term)` - equivalent to `etaContract(betaNormalize(term)`
 * `Type typeOf(Term term)`
 * `boolean alphaEqual(Term a, Term b)`
 * `boolean alphaBetaEtaEqual(Term a, Term b)`

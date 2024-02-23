@@ -45,23 +45,7 @@ class BetaEtaNormalizer {
             return normalize(eted, outsideBinders);
         }
 
-        BetaEtaNormal result = new BetaEtaNormal(h, b.binder, b.arguments);
-
-        {
-            // sanity check
-            List<Variable> clearBinders = new ArrayList<>();
-            for (int i = 0; i < result.getBinder().size(); i++) {
-                if (i < outsideBinders.size()) continue;
-                clearBinders.add(result.getBinder().get(i));
-            }
-            BetaEtaNormal rr = new BetaEtaNormal(result.getHead(), clearBinders, result.getArguments());
-            Term tttt = rr.backToTerm();
-            if (!Normalizer.etaContract(tttt).equals(Normalizer.etaContract(normalized))) {
-                throw new RuntimeException();
-            }
-        }
-
-        return result;
+        return new BetaEtaNormal(h, b.binder, b.arguments);
     }
 
     private final List<Variable> binder = new ArrayList<>();

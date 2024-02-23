@@ -1,5 +1,6 @@
 package pl.wojciechkarpiel.jhou.testUtil;
 
+import pl.wojciechkarpiel.jhou.Api;
 import pl.wojciechkarpiel.jhou.ast.Term;
 import pl.wojciechkarpiel.jhou.ast.Variable;
 import pl.wojciechkarpiel.jhou.ast.util.FreeVariable;
@@ -7,20 +8,18 @@ import pl.wojciechkarpiel.jhou.substitution.Substitution;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static pl.wojciechkarpiel.jhou.Api.alphaBetaEtaEqual;
+import static org.junit.jupiter.api.Assertions.*;
+import static pl.wojciechkarpiel.jhou.Api.betaNormalEtaContracted;
 
 public class TestUtil {
 
     public static void assertGoodSolution(Substitution s, Term a, Term b) {
         Term as = s.substitute(a);
         Term bs = s.substitute(b);
-        assertTrue(alphaBetaEtaEqual(as, bs));
+        assertAlphaEqual(Api.betaNormalEtaContracted(as), betaNormalEtaContracted(bs));
         Set<Variable> freeA = FreeVariable.getFreeVariables(as);
         Set<Variable> freeB = FreeVariable.getFreeVariables(bs);
 
-        // todo not good, all FVs should be eliminated and exchanged for a constant, no leftovers
         if (!freeA.isEmpty() || !freeB.isEmpty()) {
             fail();
         }
@@ -35,4 +34,17 @@ public class TestUtil {
         assertTrue(freeA.isEmpty());
         assertTrue(freeB.isEmpty());
     }
+
+    public static void assertAlphaEqual(Term a, Term b) {
+        assertTrue(Api.alphaEqual(a, b));
+    }
+
+    public static void assertAlphaEqual(Substitution a, Substitution b) {
+        assertTrue(a.alphaEquals(b));
+    }
+
+    public static void assertNotAlphaEqual(Term a, Term b) {
+        assertFalse(Api.alphaEqual(a, b));
+    }
+
 }

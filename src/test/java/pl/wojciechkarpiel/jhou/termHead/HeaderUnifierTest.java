@@ -14,6 +14,7 @@ import pl.wojciechkarpiel.jhou.ast.util.Id;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static pl.wojciechkarpiel.jhou.testUtil.TestUtil.assertAlphaEqual;
 
 class HeaderUnifierTest {
 
@@ -34,8 +35,8 @@ class HeaderUnifierTest {
         Optional<AlphaEqual.BenPair> co = AlphaEqual.alphaEqualizeHeading(a, b);
         assertTrue(co.isPresent());
         AlphaEqual.BenPair c = co.get();
-        assertEquals(freshLamxx(t), c.getLeft().backToTerm());
-        assertEquals(freshLamxx(t), c.getRight().backToTerm());
+        assertAlphaEqual(freshLamxx(t), c.getLeft().backToTerm());
+        assertAlphaEqual(freshLamxx(t), c.getRight().backToTerm());
     }
 
     @Test

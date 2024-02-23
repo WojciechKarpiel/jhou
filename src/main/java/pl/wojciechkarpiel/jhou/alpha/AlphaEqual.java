@@ -19,7 +19,7 @@ public class AlphaEqual {
     private AlphaEqual() {
     }
 
-    public static boolean isAlphaEqual(Abstraction a, Abstraction b) {
+    public static boolean isAlphaEqual(Term a, Term b) {
         return LazyAlphaEqual.isAlphaEqualLazy(a, b);
     }
 
@@ -76,7 +76,7 @@ public class AlphaEqual {
     private static boolean equalHeadings(BetaEtaNormal a, BetaEtaNormal b) {
         BetaEtaNormal aLol = BetaEtaNormal.fromFakeNormal(a.getHead(), a.getBinder(), ListUtil.of());
         BetaEtaNormal bLol = BetaEtaNormal.fromFakeNormal(b.getHead(), b.getBinder(), ListUtil.of());
-        return aLol.backToTerm().equals(bLol.backToTerm());
+        return AlphaEqual.isAlphaEqual(aLol.backToTerm(), bLol.backToTerm());
     }
 
     public static class BenPair extends Pair<BetaEtaNormal, BetaEtaNormal> {

@@ -7,8 +7,11 @@ import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.substitution.Substitution;
 import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.wojciechkarpiel.jhou.Api.*;
+import static pl.wojciechkarpiel.jhou.testUtil.TestUtil.assertAlphaEqual;
+import static pl.wojciechkarpiel.jhou.testUtil.TestUtil.assertNotAlphaEqual;
 
 class ApiTest {
 
@@ -36,11 +39,11 @@ class ApiTest {
 
         // check if shape of substitution is the one we expect
         Substitution expectedSolution = new Substitution(y, abstraction(type, x -> x));
-        assertEquals(expectedSolution, solution);
+        assertAlphaEqual(expectedSolution, solution);
 
         // let's also do the substitutions for the final check
-        assertNotEquals(left, right);
-        assertEquals(
+        assertNotAlphaEqual(left, right);
+        assertAlphaEqual(
                 betaNormalize(solution.substitute(left)),
                 betaNormalize(solution.substitute(right))
         );

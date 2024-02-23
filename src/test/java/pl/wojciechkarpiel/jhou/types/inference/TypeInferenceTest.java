@@ -1,6 +1,8 @@
 package pl.wojciechkarpiel.jhou.types.inference;
 
 import org.junit.jupiter.api.Test;
+import pl.wojciechkarpiel.jhou.Api;
+import pl.wojciechkarpiel.jhou.alpha.AlphaEqual;
 import pl.wojciechkarpiel.jhou.ast.*;
 import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
@@ -15,6 +17,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static pl.wojciechkarpiel.jhou.Api.*;
+import static pl.wojciechkarpiel.jhou.testUtil.TestUtil.assertAlphaEqual;
+import static pl.wojciechkarpiel.jhou.testUtil.TestUtil.assertNotAlphaEqual;
 
 class TypeInferenceTest {
 
@@ -86,15 +90,15 @@ class TypeInferenceTest {
         Type t = ((Abstraction) right).getVariable().getType();
         Term expectedSub = abstraction(t, x -> x);
         assertEquals(1, solution.getSubstitution().size());
-        assertEquals(expectedSub, solution.getSubstitution().get(0).getTerm());
+        assertTrue(Api.alphaEqual(expectedSub, (solution.getSubstitution().get(0).getTerm())));
         assertEquals("y", solution.getSubstitution().get(0).getVariable().toString());
 
         // let's also do the substitutions for the final check
-        assertNotEquals(left, right);
-        assertEquals(
+        assertNotAlphaEqual(left, right);
+        assertTrue(Api.alphaEqual(
                 betaNormalize(solution.substitute(left)),
                 betaNormalize(solution.substitute(right))
-        );
+        ));
     }
 
 
@@ -123,12 +127,13 @@ class TypeInferenceTest {
         Type t = ((Abstraction) right).getVariable().getType();
         Term expectedSub = abstraction(t, x -> x);
         assertEquals(1, solution.getSubstitution().size());
-        assertEquals(expectedSub, solution.getSubstitution().get(0).getTerm());
+        assertAlphaEqual(expectedSub, solution.getSubstitution().get(0).getTerm());
         assertEquals("y", solution.getSubstitution().get(0).getVariable().toString());
 
         // let's also do the substitutions for the final check
-        assertNotEquals(left, right);
-        assertEquals(
+        assertNotAlphaEqual(left, right);
+        assertFalse(AlphaEqual.isAlphaEqual(left, right));
+        assertAlphaEqual(
                 betaNormalize(solution.substitute(left)),
                 betaNormalize(solution.substitute(right))
         );
@@ -156,7 +161,7 @@ class TypeInferenceTest {
 
         // check if shape of substitution is the one we expect
         Substitution expectedSolution = new Substitution(y, abstraction(type, x -> x));
-        assertEquals(expectedSolution, solution);
+        assertAlphaEqual(expectedSolution, solution);
 
     }
 

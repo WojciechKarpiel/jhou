@@ -57,7 +57,7 @@ public class Normalizer {
                 Term body = etaCompressInternal(abstraction.getBody());
                 if (body instanceof Application) {
                     Application app = (Application) body;
-                    if (app.getArgument().equals(v)) {
+                    if (v.equals(app.getArgument())) {
                         return etaCompressInternal(app.getFunction());
                     }
                 }

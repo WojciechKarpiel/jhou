@@ -1,5 +1,6 @@
 package pl.wojciechkarpiel.jhou.substitution;
 
+import pl.wojciechkarpiel.jhou.alpha.AlphaEqual;
 import pl.wojciechkarpiel.jhou.ast.Term;
 import pl.wojciechkarpiel.jhou.ast.Variable;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
@@ -42,5 +43,9 @@ public class SubstitutionPair {
     @Override
     public int hashCode() {
         return Objects.hash(variable, term);
+    }
+
+    public boolean alphaEquals(SubstitutionPair that) {
+        return Objects.equals(variable, that.variable) && AlphaEqual.isAlphaEqual(term, that.term);
     }
 }

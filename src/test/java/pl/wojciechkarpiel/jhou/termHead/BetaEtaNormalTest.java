@@ -7,6 +7,7 @@ import pl.wojciechkarpiel.jhou.ast.type.ArrowType;
 import pl.wojciechkarpiel.jhou.ast.type.BaseType;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Id;
+import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.ArrayList;
@@ -133,9 +134,9 @@ class BetaEtaNormalTest {
 
         Term expanded = Api.etaExpand(c);
         assertEquals(c, fakeNormal.backToTerm());
-        assertEquals(expanded, realNormal.backToTerm());
-        assertNotEquals(realNormal.backToTerm(), fakeNormal.backToTerm());
+        TestUtil.assertAlphaEqual(expanded, realNormal.backToTerm());
+        TestUtil.assertNotAlphaEqual(realNormal.backToTerm(), fakeNormal.backToTerm());
         assertEquals(c, Api.etaContract(realNormal.backToTerm()));
-        assertEquals(expanded, Api.etaExpand(fakeNormal.backToTerm()));
+        TestUtil.assertAlphaEqual(expanded, Api.etaExpand(fakeNormal.backToTerm()));
     }
 }

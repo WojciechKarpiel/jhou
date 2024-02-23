@@ -2,6 +2,8 @@
 
 ## 0.10
 
+* Bugfix: reparir equals-hashCode contract in `Abstraction`
+
 ## 0.9
 
 * Performance improvement: search tree pruning

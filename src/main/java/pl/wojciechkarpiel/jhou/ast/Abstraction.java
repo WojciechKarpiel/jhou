@@ -1,6 +1,5 @@
 package pl.wojciechkarpiel.jhou.ast;
 
-import pl.wojciechkarpiel.jhou.alpha.AlphaEqual;
 import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 
@@ -48,7 +47,7 @@ public class Abstraction implements Term {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Abstraction that = (Abstraction) o;
-        return AlphaEqual.isAlphaEqual(this, that);
+        return Objects.equals(variable, that.variable) && Objects.equals(body, that.body);
     }
 
     @Override

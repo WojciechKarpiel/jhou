@@ -1,5 +1,6 @@
 package pl.wojciechkarpiel.jhou.unifier.tree;
 
+import pl.wojciechkarpiel.jhou.ast.Equality;
 import pl.wojciechkarpiel.jhou.ast.Term;
 import pl.wojciechkarpiel.jhou.ast.Variable;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
@@ -136,28 +137,30 @@ public class WorkWorkNode implements Tree {
     private static List<Substitution> deduplicateSort(List<Substitution> input) {
         if (input.isEmpty()) return input;
 
-        Map<Variable, Set<Term>> dedupByVar = new HashMap<>(input.size());
+        // List<Term> and not Set<Term> because of alpha-equality problem
+        Map<Variable, List<Term>> dedupByVar = new HashMap<>(input.size());
         for (Substitution pair_ : input) {
             if (pair_.getSubstitution().size() > 1) throw new RuntimeException();
             if (pair_.getSubstitution().isEmpty()) continue;
             SubstitutionPair pair = pair_.getSubstitution().get(0);
-            Set<Term> s_ = new HashSet<>();
-            Set<Term> s = dedupByVar.putIfAbsent(pair.getVariable(), s_);
+            List<Term> s_ = new ArrayList<>();
+            List<Term> s = dedupByVar.putIfAbsent(pair.getVariable(), s_);
             if (s == null) s = s_;
-            s.add(pair.getTerm());
+            // could be Set.add if not for alpha equality (bruijn would fix the problem of hashcode-equals for alpha)
+            if (s.stream().noneMatch(t -> Equality.alphaEqual(t, pair.getTerm()))) s.add(pair.getTerm());
         }
         if (dedupByVar.isEmpty()) {
             return input;
         }
 
-        List<Pair<Variable, Set<Term>>> least = new ArrayList<>();
-        int minCount = dedupByVar.values().stream().mapToInt(Set::size).min().getAsInt();
+        List<Pair<Variable, List<Term>>> least = new ArrayList<>();
+        int minCount = dedupByVar.values().stream().mapToInt(List::size).min().getAsInt();
         dedupByVar.entrySet().stream().filter(p -> p.getValue().size() == minCount)
                 .forEach(p -> least.add(Pair.of(p.getKey(), p.getValue())));
 
         least.sort(Comparator.comparingInt(o -> o.getLeft().getId().getId()));
 
-        Pair<Variable, Set<Term>> minSized = least.get(0);
+        Pair<Variable, List<Term>> minSized = least.get(0);
         return minSized.getRight().stream()
                 // Sorting here doesn't help the algorithm, it's here to ensure deterministic outputs
                 .sorted(Comparator.comparingInt(Term::hashCode))

@@ -3,6 +3,7 @@
 ## 0.10
 
 * Bugfix: reparir equals-hashCode contract in `Abstraction`
+* More tree prunning
 
 ## 0.9
 

@@ -5,6 +5,7 @@ import pl.wojciechkarpiel.jhou.ast.type.Type;
 import pl.wojciechkarpiel.jhou.ast.util.Visitor;
 import pl.wojciechkarpiel.jhou.normalizer.Normalizer;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
+import pl.wojciechkarpiel.jhou.util.ListUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.List;
 class BetaEtaNormalizer {
 
     static BetaEtaNormal normalize(Term term) {
-        return BetaEtaNormalizer.normalize(term, new ArrayList<Variable>());
+        return BetaEtaNormalizer.normalize(term, ListUtil.of());
     }
 
 

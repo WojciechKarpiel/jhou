@@ -1,6 +1,5 @@
 package pl.wojciechkarpiel.jhou.util;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -10,8 +9,28 @@ public class DevNullPrintStream extends PrintStream {
     private DevNullPrintStream() {
         super(new OutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
             }
         });
+    }
+
+    @Override
+    public void println() {
+    }
+
+    @Override
+    public void println(String x) {
+    }
+
+    @Override
+    public void print(String x) {
+    }
+
+    @Override
+    public void println(Object o) {
+    }
+
+    @Override
+    public void print(Object o) {
     }
 }

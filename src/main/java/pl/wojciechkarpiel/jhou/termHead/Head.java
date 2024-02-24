@@ -59,7 +59,7 @@ public interface Head {
             this.c = c;
         }
 
-        public Constant getC() {
+        public Constant getConstant() {
             return c;
         }
 

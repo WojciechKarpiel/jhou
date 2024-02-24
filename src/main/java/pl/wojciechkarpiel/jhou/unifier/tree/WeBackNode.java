@@ -19,10 +19,6 @@ public class WeBackNode implements Tree {
         this.usedUp = false;
     }
 
-    public Substitution getSubstitution() {
-        return substitution;
-    }
-
     public Tree getParent() {
         return parent;
     }

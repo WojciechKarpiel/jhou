@@ -12,9 +12,9 @@ import pl.wojciechkarpiel.jhou.termHead.BetaEtaNormal;
 import pl.wojciechkarpiel.jhou.termHead.HeadOps;
 import pl.wojciechkarpiel.jhou.testUtil.TestUtil;
 import pl.wojciechkarpiel.jhou.types.TypeCalculator;
-import pl.wojciechkarpiel.jhou.unifier.*;
-import pl.wojciechkarpiel.jhou.unifier.simplifier.result.SimplificationResult;
-import pl.wojciechkarpiel.jhou.util.ListUtil;
+import pl.wojciechkarpiel.jhou.unifier.SolutionIterator;
+import pl.wojciechkarpiel.jhou.unifier.UnificationSettings;
+import pl.wojciechkarpiel.jhou.unifier.Unifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -104,7 +104,6 @@ class MatcherTest {
         Constant c1 = new Constant(Id.uniqueId(), c1t);
         Variable v1 = new Variable(Id.uniqueId(), c1t);
         Variable v2 = new Variable(Id.uniqueId(), c2t);
-        BaseType fint = new BaseType(Id.uniqueId(), "TFIN");
         Variable v = new Variable(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, c2t)));
         Term flexible = new Abstraction(v1, new Abstraction(v2, new Application(new Application(v, c1), c2)));
         Constant c = new Constant(Id.uniqueId(), new ArrowType(c1t, new ArrowType(c2t, c2t)));
@@ -215,7 +214,6 @@ class MatcherTest {
 
         BetaEtaNormal noRight = BetaEtaNormal.normalize(right);
         BetaEtaNormal noLeft = BetaEtaNormal.normalize(left);
-        SimplificationResult q = Simplifier.simplify(new DisagreementSet(ListUtil.of(new DisagreementPair(left, right))));
         List<Term> match = Matcher.possibleSubstitutionTerms(new Matcher.RigidFlexible(noRight, noLeft));
         assertEquals(3, match.size());
         Term imitator = match.get(0);

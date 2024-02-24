@@ -22,19 +22,34 @@ public class WorkWorkNode implements Tree {
 
     private final Substitution fromParent;
     private final DisagreementSet disagreementSet;
-    private final boolean pretendYoureDoingFirstOrder;
+    private final boolean pretendYoureDoingFirstOrder; // hack
 
     private List<Tree> children;
     private final Tree parent;
 
-    public WorkWorkNode(Tree parent, Substitution fromParent, DisagreementSet disagreementSet) {
-        this(parent, fromParent, disagreementSet, false);
+    public static WorkWorkNode searchTreeRoot(Term a, Term b) {
+        return searchTreeRoot(new DisagreementSet(ListUtil.of(new DisagreementPair(a, b))));
+    }
+
+    public static WorkWorkNode searchTreeRoot(DisagreementSet disagreementSet) {
+        return new WorkWorkNode(disagreementSet, false);
+    }
+
+    /**
+     * Hack for solving first-order problems faster. Will break if presented with a higher-order problem.
+     */
+    public static Tree firstOrderTree(DisagreementSet disagreementSet) {
+        return new WorkWorkNode(disagreementSet, true);
+    }
+
+    private WorkWorkNode(DisagreementSet disagreementSet, boolean pretendYoureDoingFirstOrder) {
+        this(null, Substitution.empty(), disagreementSet, pretendYoureDoingFirstOrder);
     }
 
     /**
      * @param pretendYoureDoingFirstOrder total hack, don't use. TODO: write a separate 1st order unification class
      */
-    public WorkWorkNode(Tree parent, Substitution fromParent, DisagreementSet disagreementSet, boolean pretendYoureDoingFirstOrder) {
+    private WorkWorkNode(Tree parent, Substitution fromParent, DisagreementSet disagreementSet, boolean pretendYoureDoingFirstOrder) {
         this.parent = parent;
         this.fromParent = fromParent;
         this.disagreementSet = disagreementSet;

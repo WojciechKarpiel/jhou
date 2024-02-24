@@ -27,11 +27,10 @@ public class NagmiNode implements Tree {
 
     @Override
     public void expandOnce() {
-
     }
 
     @Override
     public Substitution inheritedSubstitution() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

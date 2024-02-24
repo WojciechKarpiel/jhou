@@ -18,6 +18,7 @@ import pl.wojciechkarpiel.jhou.unifier.tree.WorkWorkNode;
 import pl.wojciechkarpiel.jhou.util.DevNullPrintStream;
 import pl.wojciechkarpiel.jhou.util.ListUtil;
 import pl.wojciechkarpiel.jhou.util.MapUtil;
+import pl.wojciechkarpiel.jhou.util.Pair;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -40,6 +41,12 @@ public class TypeInference {
 
     public static List<Term> inferMissing(List<Term> termsOfSameType, AllowedTypeInference allowedTypeInference) {
         return inferMissing(termsOfSameType, allowedTypeInference, System.out);
+    }
+
+    public static Pair<Term, Term> inferMissing(Pair<Term, Term> termsOfEqualType, AllowedTypeInference allowedTypeInference, PrintStream printStream) {
+        List<Term> inputList = ListUtil.of(termsOfEqualType.getLeft(), termsOfEqualType.getRight());
+        List<Term> outputList = inferMissingInternal(inputList, allowedTypeInference, printStream);
+        return Pair.of(outputList.get(0), outputList.get(1));
     }
 
     public static List<Term> inferMissing(List<Term> termsOfEqualType, AllowedTypeInference allowedTypeInference, PrintStream printStream) {
@@ -77,7 +84,7 @@ public class TypeInference {
 
         DisagreementSet disagreementSet = new DisagreementSet(ds);
 
-        Tree tree = new WorkWorkNode(null, Substitution.empty(), disagreementSet, true);
+        Tree tree = WorkWorkNode.firstOrderTree(disagreementSet);
         SolutionIterator s = new SolutionIterator(tree, DevNullPrintStream.INSTANCE);
         Substitution nxt = s.next();
         return termsOfEqualType.stream().map(term -> l3l.recreateWithTypes(term, nxt)).collect(Collectors.toList());

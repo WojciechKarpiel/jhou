@@ -165,4 +165,13 @@ class TypeInferenceTest {
 
     }
 
+    @Test
+    void cantUnify() {
+        Type t = freshType();
+        Type p = freshType();
+        Constant c = (Constant) freshConstant(arrow(t, t));
+        Variable v = freshVariable(p);
+
+        assertThrows(TypeInference.CantUnifyTypesException.class, () -> unify(v, abstraction(x -> app(c, x))));
+    }
 }
